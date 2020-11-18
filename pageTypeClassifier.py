@@ -5,18 +5,22 @@ import pandas as pd
 import numpy as np
 
 """
-Run: In Terminal or CommandPrompt, call using "python labelling.py start_ballot_num end_ballot_num"
+This program can be used to classify the .jpg scans by the layout on the page. 
+This program makes some assumptions about nearby even and odd ballots and may not classify all images with 100% accuracy
 
-Usage: Then the start_ballot will be opened, and you will be prompted (in Terminal or CommandPrompt) to
-enter a string. The format of the string should be 'first_vote', 'second_vote', 'third_vote'. Candidate numbers
-start at 1, and should be in order as they appear on the ballot. If fewer than 3 candidates are voted for, the
-last votes should be '0'. After entering a correct vote, the next image will pop up. Then just repeat until the
-end_ballot.
+Run in Terminal or CommandPrompt. 
+Call using `python3 pageTypeClassifier.py iterate_odd_ballot_nums step_size previous_step_size`
 
-Valid usage: '135', '120', '300', '000'
+Special Commands while running
+    print: prints a table of already defined inputs and thier hotkey tags 
+    (note: tags are not necessarily consistent over runs so always check when you start)
+    open: Reopens the current image in case it didn't open correctly the first time
+    stop: save and terminates the program
 
-Invalid usage: '1 3 5', '1,3,5', '102', '314'
+To add a new type of page simply type it and you will be asked to define a temporary tag for it
 
+Note: If you make a mistake classifying a page type, call stop immediately and manually fix pages.csv 
+(note nearby unlabeled data may have been effected by a bad label)
 """
 
 def get_image_name(ballot_number):
@@ -44,6 +48,8 @@ def get_image_name(ballot_number):
 
 
 start = int(sys.argv[1])
+step = int(sys.argv[2])
+prev_step = int(sys.argv[3])
 
 pagesdf = pd.read_csv('pages.csv')
 
@@ -85,20 +91,21 @@ while ballot < 35660:
         if string == 'stop':
             break
         pagesdf['PageType'][ballot - 1] = label
-        if pagesdf['PageType'][(10 * (int(ballot / 10))) + start - 1] == label and label != 'unlabeled':
-            i = (10 * int(ballot / 10)) + start + 1
+        if pagesdf['PageType'][(prev_step * (int(ballot / prev_step))) + start - 1] == label and label != 'unlabeled':
+            i = (prev_step * int(ballot / prev_step)) + start + 1
             while i < ballot - 1:
                 pagesdf['PageType'][i] = label
                 i += 2
         im.close()
-        if ballot < 35650 and pagesdf['PageType'][(10 * (int(ballot / 10) + 1)) + start - 1] == label and label != 'unlabeled':
+        if ballot < 35650 and pagesdf['PageType'][(prev_step * (int(ballot / prev_step) + 1)) + start - 1] == label and label != 'unlabeled':
             i = ballot + 1
-            while i < (10 * (int(ballot / 10) + 1)) + start - 1:
+            while i < (prev_step * (int(ballot / prev_step) + 1)) + start - 1:
                 pagesdf['PageType'][i] = label
                 i += 2
-    ballot += 2
+    ballot += step
 pagesdf.to_csv('pages.csv', index=False)
 """
+#initializer code for pages.csv
 with open("pages.csv", 'w') as csvfile:
     # creating a csv writer object
     csvwriter = csv.writer(csvfile)

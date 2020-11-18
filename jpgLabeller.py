@@ -1,27 +1,27 @@
-# PNG_name    BubbleNumber    Label
-# PNG00001         0            0
-# PNG00001         1            1
-# PNG00001         2            0
-# PNG00001         3            0
-# PNG00001         4            6
-# PNG00001         5            0
+"""
+HOW TO USE jpgLabeler.py:
 
-# PNG_name    BubbleNumber    Label1 Label2 Label3
-# PNG00001         0            0      0      1
-# PNG00002         1            1      0      0
-# PNG00003         2            0      0      0
-# PNG00004         3            0      1      0
-# PNG00005         4            6      2      2
-# PNG00006         5            0      0      1
+jpgLabeler.py should be in the directory containing the '00', '01', '02', '03' 
+folders and pages.csv. 
 
+When calling the program, you will now be prompted to select a page type from 
+the list. The program will iterate over ballots and races for you automatically.
+When prompted to enter enter data for a race, you should enter one digit per 
+bubble using the dictionary of marks.
 
-# newdf = pagesdf[pagesdf['COL_Name'] == value]
+Example: In a 3 bubble race, enter labels in the form 001 to indicate that only
+the bottom candidate was bubbled in. See 
 
+Instead of entering labels for a race, you can instead type a command:
 
+print: prints the dictionary
 
+open: opens the image
 
+undo: clears the labels for the previous jpg and prompts it to be entered again
 
-
+stop: saves the data and terminates early. (Use CTRL C to stop without saving)
+"""
 from PIL import Image
 import sys
 import csv
@@ -52,8 +52,15 @@ def get_image_name(ballot_number):
 
 pagesdf = pd.read_csv('pages.csv')
 
-dictionary = {'0': 'no mark', '1': 'properly bubbled', '2':'X marked', '3':'check marked',
-         '4':'lightly bubbled', '5':'partially bubbled', '6':'bubbled and crossed out', '7':'other'}
+dictionary = {'0': 'no mark', 
+              '1': 'properly bubbled', 
+              '2':'X marked', 
+              '3':'check marked',
+              '4':'lightly bubbled', 
+              '5':'partially bubbled', 
+              '6':'bubbled and crossed out', 
+              '7':'bad scan / wrong race', 
+              '8':'other'}
 bubbles_on_page = {'Zachary B. Thoma and Dan Hauser': [7, 3],
                  'David R. Couch':[9],
                  'Kathleen A. Fairchild': [7],
@@ -121,9 +128,20 @@ while row < len(ballotsdf.index):
                 labels = input('Enter Ballot ' + str(ballotsdf['JPGNumber'][row]) + ' Race ' + str(race_no) + ' labels: ')
                 if labels == 'stop':
                     break
+                elif labels == 'print':
+                    bad_input = 1
+                    for i in dictionary:
+                        print(i, ": ", dictionary[i])
+                elif labels == 'open':
+                    bad_input = 1
+                    im.show()
                 elif labels == 'undo':
                     row -= 1
                     bad_input = 1
+                    im.close()
+                    nm = get_image_name(ballotsdf['JPGNumber'][row])
+                    im = Image.open(nm)
+                    im.show()
                     for race_no2 in range(0, len(bubbles_on_page[pt])):
                         for i in range(0, race_no2):
                             ballotsdf['Race ' + str(race_no2) + ' Bubble ' + str(i)][row] = -1
@@ -167,6 +185,5 @@ for r in races:
       for i in rdf['JPGNumber']:
         values[0] = i
         csvwriter.writerow(values.astype(int))
-
 
 """

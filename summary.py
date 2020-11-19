@@ -100,7 +100,7 @@ with open('summary.csv', 'w') as csvfile:
     else:
         output_string.append('Incomplete')
     output_string.append(str(int(tl)))
-    output_string.append(str(int(35660 - tl)))
+    output_string.append(str(int(28383 - tl)))
     labeled = total_mark_counts[0] * -1
     for mark in total_mark_counts:
         labeled += mark

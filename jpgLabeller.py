@@ -28,6 +28,7 @@ import csv
 import pandas as pd
 import numpy as np
 
+
 def get_image_name(ballot_number):
     top = int(ballot_number / 10000)
     middle = int((ballot_number % 10000) / 100)
@@ -50,61 +51,62 @@ def get_image_name(ballot_number):
     image_nm += str(ballot_number) + '.jpg'
     return image_nm
 
+
 pagesdf = pd.read_csv('pages.csv')
 
-dictionary = {'0': 'no mark', 
-              '1': 'properly bubbled', 
-              '2':'X marked', 
-              '3':'check marked',
-              '4':'lightly bubbled', 
-              '5':'partially bubbled', 
-              '6':'bubbled and crossed out', 
-              '7':'bad scan / wrong race', 
-              '8':'other'}
+dictionary = {'0': 'no mark',
+              '1': 'properly bubbled',
+              '2': 'X marked',
+              '3': 'check marked',
+              '4': 'lightly bubbled',
+              '5': 'partially bubbled',
+              '6': 'bubbled and crossed out',
+              '7': 'bad scan / wrong race',
+              '8': 'other'}
 bubbles_on_page = {'Zachary B. Thoma and Dan Hauser': [7, 3],
-                 'David R. Couch':[9],
-                 'Kathleen A. Fairchild': [7],
-                 'Nicole Chase': [7],
-                 'Michael Caldwell': [5],
-                 'Natalie Zall': [8],
-                 'Sarie Toste Zachary B. Thoma and Dan Hauser':[7, 7, 3],
-                 'Sherry Dalziel': [7],
-                 'Kerry Gail Watty': [3],
-                 'Sarie Toste (left)':[7],
-                 'Emil Feierabend and Jerry Hansen':[3, 8],
-                 'Sarie Toste and Dan Hauser':[7, 3],
-                 'Sarie Toste (right)':[7],
-                 'Erin Maureen Taylor':[7],
-                 'Sarie Toste and David R. Couch':[7,9],
-                 'Tim Hooven': [8],
-                 'Tom Chapman':[7],
-                 'Dan Hauser':[3],
-                 'John Ash': [4],
-                 'Gaye Gerdts': [3]
-                 }
+                   'David R. Couch': [9],
+                   'Kathleen A. Fairchild': [7],
+                   'Nicole Chase': [7],
+                   'Michael Caldwell': [5],
+                   'Natalie Zall': [8],
+                   'Sarie Toste Zachary B. Thoma and Dan Hauser': [7, 7, 3],
+                   'Sherry Dalziel': [7],
+                   'Kerry Gail Watty': [3],
+                   'Sarie Toste (left)': [7],
+                   'Emil Feierabend and Jerry Hansen': [3, 8],
+                   'Sarie Toste and Dan Hauser': [7, 3],
+                   'Sarie Toste (right)': [7],
+                   'Erin Maureen Taylor': [7],
+                   'Sarie Toste and David R. Couch': [7, 9],
+                   'Tim Hooven': [8],
+                   'Tom Chapman': [7],
+                   'Dan Hauser': [3],
+                   'John Ash': [4],
+                   'Gaye Gerdts': [3]
+                   }
 
 page_types = ['Zachary B. Thoma and Dan Hauser',
-                 'David R. Couch',
-                 'Kathleen A. Fairchild',
-                 'Nicole Chase',
-                 'Michael Caldwell',
-                 'Natalie Zall',
-                 'Sarie Toste Zachary B. Thoma and Dan Hauser',
-                 'Sherry Dalziel',
-                 'Kerry Gail Watty',
-                 'Sarie Toste (left)',
-                 'Emil Feierabend and Jerry Hansen',
-                 'Sarie Toste and Dan Hauser',
-                 'Sarie Toste (right)',
-                 'Erin Maureen Taylor',
-                 'Sarie Toste and David R. Couch',
-                 'Tim Hooven',
-                 'Tom Chapman',
-                 'Dan Hauser',
-                 'John Ash',
-                 'Gaye Gerdts']
+              'David R. Couch',
+              'Kathleen A. Fairchild',
+              'Nicole Chase',
+              'Michael Caldwell',
+              'Natalie Zall',
+              'Sarie Toste Zachary B. Thoma and Dan Hauser',
+              'Sherry Dalziel',
+              'Kerry Gail Watty',
+              'Sarie Toste (left)',
+              'Emil Feierabend and Jerry Hansen',
+              'Sarie Toste and Dan Hauser',
+              'Sarie Toste (right)',
+              'Erin Maureen Taylor',
+              'Sarie Toste and David R. Couch',
+              'Tim Hooven',
+              'Tom Chapman',
+              'Dan Hauser',
+              'John Ash',
+              'Gaye Gerdts']
 
-#""""
+# """"
 
 for i in range(0, len(page_types)):
     print(i, ': ', page_types[i])
@@ -115,6 +117,7 @@ pt = page_types[choice]
 ballotsdf = pd.read_csv('Page Types/' + pt + '/labels.csv')
 
 row = 0
+prev = [0]
 while row < len(ballotsdf.index):
     if ballotsdf['Race 0 Bubble 0'][row] == -1:
         nm = get_image_name(ballotsdf['JPGNumber'][row])
@@ -125,7 +128,8 @@ while row < len(ballotsdf.index):
             bad_input = 1
             while bad_input == 1:
                 bad_input = 0
-                labels = input('Enter Ballot ' + str(ballotsdf['JPGNumber'][row]) + ' Race ' + str(race_no) + ' labels: ')
+                labels = input(
+                    'Enter Ballot ' + str(ballotsdf['JPGNumber'][row]) + ' Race ' + str(race_no) + ' labels: ')
                 if labels == 'stop':
                     break
                 elif labels == 'print':
@@ -136,31 +140,32 @@ while row < len(ballotsdf.index):
                     bad_input = 1
                     im.show()
                 elif labels == 'undo':
-                    row -= 1
-                    bad_input = 1
-                    im.close()
-                    nm = get_image_name(ballotsdf['JPGNumber'][row])
-                    im = Image.open(nm)
-                    im.show()
+                    row = prev.pop()
                     for race_no2 in range(0, len(bubbles_on_page[pt])):
-                        for i in range(0, race_no2):
-                            ballotsdf['Race ' + str(race_no2) + ' Bubble ' + str(i)][row] = -1
+                        for i in range(0, bubbles_on_page[pt][race_no2]):
+                            ballotsdf['Race ' +
+                                      str(race_no2) + ' Bubble ' + str(i)][row] = -1
+                    break
                 elif len(labels) != bubbles_on_page[pt][race_no]:
                     bad_input = 1
                 else:
                     for ch in labels:
                         if ch not in dictionary:
                             bad_input = 1
-            if labels == 'stop':
+            if labels == 'stop' or labels == 'undo':
                 break
             for i in range(0, bubbles_on_page[pt][race_no]):
-                ballotsdf['Race ' + str(race_no) + ' Bubble ' + str(i)][row] = labels[i]
+                ballotsdf['Race ' + str(race_no) +
+                          ' Bubble ' + str(i)][row] = labels[i]
         im.close()
-        if labels == 'stop':
+        if labels != 'stop' and labels != 'undo':
+            prev.append(row)
+        elif labels == 'stop':
             break
-    if row == (len(ballotsdf.index)-1):
-        print("Finished labelling page type: ", pt)
-    row += 1
+    if labels != 'undo':
+        row += 1
+        if row == (len(ballotsdf.index)):
+            print("Finished labelling page type: ", pt)
 ballotsdf.to_csv('Page Types/' + pt + '/labels.csv', index=False)
 """
 import os

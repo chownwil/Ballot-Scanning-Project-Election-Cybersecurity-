@@ -1,22 +1,22 @@
-Page Type,Bubbling Status,unlabeled,no mark,properly bubbled,X marked,check marked,lightly bubbled,partially bubbled,bubbled and crossed out,bad scan / wrong race,other
-Zachary B. Thoma and Dan Hauser,Complete,0,29,11,0,0,0,0,0,0,0
-David R. Couch,Complete,0,315,104,3,0,0,1,0,0,0
-Kathleen A. Fairchild,Complete,0,498,222,11,0,27,2,3,0,0
-Nicole Chase,Complete,0,663,319,11,0,7,15,7,0,0
-Michael Caldwell,Incomplete,740,0,0,0,0,0,0,0,0,0
-Natalie Zall,Incomplete,1512,0,0,0,0,0,0,0,0,0
-Sarie Toste Zachary B. Thoma and Dan Hauser,Incomplete,3553,0,0,0,0,0,0,0,0,0
-Sherry Dalziel,Incomplete,2429,0,0,0,0,0,0,0,0,0
-Kerry Gail Watty,Incomplete,1539,0,0,0,0,0,0,0,0,0
-Sarie Toste (left),Complete,0,3096,1529,66,4,100,12,30,28,0
-Emil Feierabend and Jerry Hansen,Incomplete,10648,0,0,0,0,0,0,0,0,0
-Sarie Toste and Dan Hauser,Incomplete,18310,0,0,0,0,0,0,0,0,0
-Sarie Toste (right),Incomplete,14084,0,0,0,0,0,0,0,0,0
-Erin Maureen Taylor,Incomplete,14420,0,0,0,0,0,0,0,0,0
-Sarie Toste and David R. Couch,Incomplete,34608,0,0,0,0,0,0,0,0,0
-Tim Hooven,Incomplete,17376,0,0,0,0,0,0,0,0,0
-Tom Chapman,Incomplete,16555,0,0,0,0,0,0,0,0,0
-Dan Hauser,Incomplete,7263,0,0,0,0,0,0,0,0,0
-John Ash,Incomplete,12892,0,0,0,0,0,0,0,0,0
-Gaye Gerdts,Incomplete,17661,1764,754,18,2,59,15,7,3,0
+Page Type,Bubbling Status,Labeled,unlabeled,no mark,properly bubbled,X marked,check marked,lightly bubbled,partially bubbled,bubbled and crossed out,bad scan / wrong race,other
+Zachary B. Thoma and Dan Hauser,Complete,40.0,0,29,11,0,0,0,0,0,0,0
+David R. Couch,Complete,423.0,0,315,104,3,0,0,1,0,0,0
+Kathleen A. Fairchild,Complete,763.0,0,498,222,11,0,27,2,3,0,0
+Nicole Chase,Complete,1022.0,0,663,319,11,0,7,15,7,0,0
+Michael Caldwell,Incomplete,740.0,740,0,0,0,0,0,0,0,0,0
+Natalie Zall,Incomplete,1512.0,1512,0,0,0,0,0,0,0,0,0
+Sarie Toste Zachary B. Thoma and Dan Hauser,Incomplete,3553.0,3553,0,0,0,0,0,0,0,0,0
+Sherry Dalziel,Incomplete,2429.0,2429,0,0,0,0,0,0,0,0,0
+Kerry Gail Watty,Incomplete,1539.0,1539,0,0,0,0,0,0,0,0,0
+Sarie Toste (left),Complete,4865.0,0,3096,1529,66,4,100,12,30,28,0
+Emil Feierabend and Jerry Hansen,Incomplete,10648.0,10648,0,0,0,0,0,0,0,0,0
+Sarie Toste and Dan Hauser,Incomplete,18310.0,18310,0,0,0,0,0,0,0,0,0
+Sarie Toste (right),Incomplete,14084.0,14084,0,0,0,0,0,0,0,0,0
+Erin Maureen Taylor,Incomplete,14420.0,14420,0,0,0,0,0,0,0,0,0
+Sarie Toste and David R. Couch,Incomplete,34608.0,34608,0,0,0,0,0,0,0,0,0
+Tim Hooven,Incomplete,17376.0,17376,0,0,0,0,0,0,0,0,0
+Tom Chapman,Incomplete,16555.0,16555,0,0,0,0,0,0,0,0,0
+Dan Hauser,Incomplete,7263.0,7263,0,0,0,0,0,0,0,0,0
+John Ash,Incomplete,12892.0,12892,0,0,0,0,0,0,0,0,0
+Gaye Gerdts,Incomplete,20283.0,17661,1764,754,18,2,59,15,7,3,0
 Total,Incomplete,173590,6365,2939,109,6,193,45,47,31,0

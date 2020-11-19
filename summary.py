@@ -41,7 +41,7 @@ page_layout_bubbles = {'Zachary B. Thoma and Dan Hauser': [7, 3],
                        }
 
 mark_dictionary = {
-    '-1': 'unlabeled',
+    '-1': 'bubbles unlabeled',
     '0': 'no mark',
     '1': 'properly bubbled',
     '2': 'X marked',
@@ -58,17 +58,17 @@ pagesdf = pd.read_csv('pages.csv')
 
 with open('summary.csv', 'w') as csvfile:
     csvwriter = csv.writer(csvfile)
-    header = ['Page Type']
-    header.append('Bubbling Status')
-    header.append('labeled')
+    header = ['Page Type', 'Bubbling Status',
+              'rows labeled', 'rows unlabeled', 'bubbles labeled']
     for i in mark_dictionary:
         header.append(mark_dictionary[i])
     csvwriter.writerow(header)
-
+    tl = 0
     for pl in page_layout_bubbles:
         pldf = pd.read_csv('Page Types/' + pl + '/labels.csv')
         mark_counts = np.zeros(len(mark_dictionary))
-        for ballot in range(0, len(pldf.index)):
+        n = len(pldf.index)
+        for ballot in range(0, n):
             for race in range(0, len(page_layout_bubbles[pl])):
                 for bubble in range(0, page_layout_bubbles[pl][race]):
                     mark_counts[pldf['Race ' +
@@ -82,10 +82,14 @@ with open('summary.csv', 'w') as csvfile:
             output_string.append('Complete')
         else:
             output_string.append('Incomplete')
-        labeled = mark_counts[0] * -1
-        for mark in mark_counts:
-            labeled += mark
-        output_string.append(str(int(labeled)))
+        num_bubbles = 0
+        for race in page_layout_bubbles[pl]:
+            num_bubbles += race
+        ulr = mark_counts[0] / num_bubbles
+        tl += n - ulr
+        output_string.append(str(int(n - ulr)))
+        output_string.append(str(int(ulr)))
+        output_string.append(str(int((n - ulr) * num_bubbles)))
         for mark in range(0, len(mark_counts)):
             output_string.append(str(int(mark_counts[mark])))
         csvwriter.writerow(output_string)
@@ -95,6 +99,8 @@ with open('summary.csv', 'w') as csvfile:
         output_string.append('Complete')
     else:
         output_string.append('Incomplete')
+    output_string.append(str(int(tl)))
+    output_string.append(str(int(356600 - tl)))
     labeled = total_mark_counts[0] * -1
     for mark in total_mark_counts:
         labeled += mark

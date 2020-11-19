@@ -24,6 +24,7 @@ stop: saves the data and terminates early. (Use CTRL C to stop without saving)
 """
 from PIL import Image
 import sys
+import os
 import csv
 import pandas as pd
 import numpy as np
@@ -182,6 +183,8 @@ while row < len(ballotsdf.index):
         if row == (len(ballotsdf.index)):
             print("Finished labelling page type: ", pl)
 ballotsdf.to_csv('Page Types/' + pl + '/labels.csv', index=False)
+
+os.system('python3 summary.py')
 """
 import os
 

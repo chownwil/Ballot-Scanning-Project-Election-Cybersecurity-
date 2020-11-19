@@ -132,13 +132,6 @@ while row < len(ballotsdf.index):
                     'Enter Ballot ' + str(ballotsdf['JPGNumber'][row]) + ' Race ' + str(race_no) + ' labels: ')
                 if labels == 'stop':
                     break
-                elif labels == 'print':
-                    bad_input = 1
-                    for i in dictionary:
-                        print(i, ": ", dictionary[i])
-                elif labels == 'open':
-                    bad_input = 1
-                    im.show()
                 elif labels == 'undo':
                     row = prev.pop()
                     for race_no2 in range(0, len(bubbles_on_page[pt])):
@@ -146,6 +139,28 @@ while row < len(ballotsdf.index):
                             ballotsdf['Race ' +
                                       str(race_no2) + ' Bubble ' + str(i)][row] = -1
                     break
+                elif labels == 'print':
+                    bad_input = 1
+                    for i in dictionary:
+                        print(i, ": ", dictionary[i])
+                elif labels == 'open':
+                    bad_input = 1
+                    im.show()
+                elif labels == 'count':
+                    bad_input = 1
+                    print("Ballots labeled on this run: ", len(prev) - 1)
+                    bubbles = 0
+                    for i in range(0, len(bubbles_on_page[pt])):
+                        for j in range(0, bubbles_on_page[pt][i]):
+                            bubbles += 1
+                    print("Bubbles labeled on this run: ",
+                          (len(prev) - 1) * bubbles)
+                    ballots = 1
+                    for i in range(row, len(ballotsdf.index)):
+                        if ballotsdf['Race 0 Bubble 0'][i] == -1:
+                            ballots += 1
+                    print("Ballots to go: ", ballots)
+                    print("Bubbles to go: ", ballots * bubbles)
                 elif len(labels) != bubbles_on_page[pt][race_no]:
                     bad_input = 1
                 else:

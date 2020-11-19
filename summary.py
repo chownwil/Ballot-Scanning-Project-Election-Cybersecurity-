@@ -52,7 +52,7 @@ mark_dictionary = {
     '7': 'bad scan / wrong race',
     '8': 'other'}
 
-total_mark_counts = np.zeros(len(mark_dictionary) + 1)
+total_mark_counts = np.zeros(len(mark_dictionary))
 
 pagesdf = pd.read_csv('pages.csv')
 
@@ -66,7 +66,7 @@ with open('summary.csv', 'w') as csvfile:
 
     for pl in page_layout_bubbles:
         pldf = pd.read_csv('Page Types/' + pl + '/labels.csv')
-        mark_counts = np.zeros(len(mark_dictionary) + 1)
+        mark_counts = np.zeros(len(mark_dictionary))
         for ballot in range(0, len(pldf.index)):
             for race in range(0, len(page_layout_bubbles[pl])):
                 for bubble in range(0, page_layout_bubbles[pl][race]):

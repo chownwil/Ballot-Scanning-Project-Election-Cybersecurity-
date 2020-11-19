@@ -60,7 +60,7 @@ with open('summary.csv', 'w') as csvfile:
     csvwriter = csv.writer(csvfile)
     header = ['Page Type']
     header.append('Bubbling Status')
-    header.append('Labeled')
+    header.append('labeled')
     for i in mark_dictionary:
         header.append(mark_dictionary[i])
     csvwriter.writerow(header)
@@ -85,7 +85,7 @@ with open('summary.csv', 'w') as csvfile:
         labeled = 0
         for mark in mark_counts:
             labeled += mark
-        output_string.append(labeled)
+        output_string.append(str(int(labeled)))
         for mark in range(0, len(mark_counts)):
             output_string.append(str(int(mark_counts[mark])))
         csvwriter.writerow(output_string)

@@ -95,6 +95,10 @@ with open('summary.csv', 'w') as csvfile:
         output_string.append('Complete')
     else:
         output_string.append('Incomplete')
+    labeled = 0
+    for mark in total_mark_counts:
+        labeled += mark
+    output_string.append(str(int(labeled)))
     for mark in range(0, len(total_mark_counts)):
         output_string.append(str(int(total_mark_counts[mark])))
     csvwriter.writerow(output_string)

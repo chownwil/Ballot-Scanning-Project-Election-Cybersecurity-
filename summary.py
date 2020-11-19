@@ -82,7 +82,7 @@ with open('summary.csv', 'w') as csvfile:
             output_string.append('Complete')
         else:
             output_string.append('Incomplete')
-        labeled = 0
+        labeled = mark_counts[0] * -1
         for mark in mark_counts:
             labeled += mark
         output_string.append(str(int(labeled)))
@@ -95,7 +95,7 @@ with open('summary.csv', 'w') as csvfile:
         output_string.append('Complete')
     else:
         output_string.append('Incomplete')
-    labeled = 0
+    labeled = total_mark_counts[0] * -1
     for mark in total_mark_counts:
         labeled += mark
     output_string.append(str(int(labeled)))

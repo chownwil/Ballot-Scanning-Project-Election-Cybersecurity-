@@ -4,9 +4,9 @@ HOW TO USE jpgLabeler.py:
 jpgLabeler.py should be in the directory containing the '00', '01', '02', '03' 
 folders and pages.csv. 
 
-When calling the program, you will now be prompted to select a page type from 
+When calling the program, you will now be prompled to select a page type from 
 the list. The program will iterate over ballots and races for you automatically.
-When prompted to enter enter data for a race, you should enter one digit per 
+When prompled to enter enter data for a race, you should enter one digit per 
 bubble using the dictionary of marks.
 
 Example: In a 3 bubble race, enter labels in the form 001 to indicate that only
@@ -18,7 +18,7 @@ print: prints the dictionary
 
 open: opens the image
 
-undo: clears the labels for the previous jpg and prompts it to be entered again
+undo: clears the labels for the previous jpg and prompls it to be entered again
 
 stop: saves the data and terminates early. (Use CTRL C to stop without saving)
 """
@@ -63,27 +63,27 @@ dictionary = {'0': 'no mark',
               '6': 'bubbled and crossed out',
               '7': 'bad scan / wrong race',
               '8': 'other'}
-bubbles_on_page = {'Zachary B. Thoma and Dan Hauser': [7, 3],
-                   'David R. Couch': [9],
-                   'Kathleen A. Fairchild': [7],
-                   'Nicole Chase': [7],
-                   'Michael Caldwell': [5],
-                   'Natalie Zall': [8],
-                   'Sarie Toste Zachary B. Thoma and Dan Hauser': [7, 7, 3],
-                   'Sherry Dalziel': [7],
-                   'Kerry Gail Watty': [3],
-                   'Sarie Toste (left)': [7],
-                   'Emil Feierabend and Jerry Hansen': [3, 8],
-                   'Sarie Toste and Dan Hauser': [7, 3],
-                   'Sarie Toste (right)': [7],
-                   'Erin Maureen Taylor': [7],
-                   'Sarie Toste and David R. Couch': [7, 9],
-                   'Tim Hooven': [8],
-                   'Tom Chapman': [7],
-                   'Dan Hauser': [3],
-                   'John Ash': [4],
-                   'Gaye Gerdts': [3]
-                   }
+page_layout_bubbles = {'Zachary B. Thoma and Dan Hauser': [7, 3],
+                       'David R. Couch': [9],
+                       'Kathleen A. Fairchild': [7],
+                       'Nicole Chase': [7],
+                       'Michael Caldwell': [5],
+                       'Natalie Zall': [8],
+                       'Sarie Toste Zachary B. Thoma and Dan Hauser': [7, 7, 3],
+                       'Sherry Dalziel': [7],
+                       'Kerry Gail Watty': [3],
+                       'Sarie Toste (left)': [7],
+                       'Emil Feierabend and Jerry Hansen': [3, 8],
+                       'Sarie Toste and Dan Hauser': [7, 3],
+                       'Sarie Toste (right)': [7],
+                       'Erin Maureen Taylor': [7],
+                       'Sarie Toste and David R. Couch': [7, 9],
+                       'Tim Hooven': [8],
+                       'Tom Chapman': [7],
+                       'Dan Hauser': [3],
+                       'John Ash': [4],
+                       'Gaye Gerdts': [3]
+                       }
 
 page_types = ['Zachary B. Thoma and Dan Hauser',
               'David R. Couch',
@@ -111,10 +111,10 @@ page_types = ['Zachary B. Thoma and Dan Hauser',
 for i in range(0, len(page_types)):
     print(i, ': ', page_types[i])
 choice = int(input('Choose a race number:'))
-pt = page_types[choice]
+pl = page_types[choice]
 
 
-ballotsdf = pd.read_csv('Page Types/' + pt + '/labels.csv')
+ballotsdf = pd.read_csv('Page Types/' + pl + '/labels.csv')
 
 row = 0
 prev = [0]
@@ -124,7 +124,7 @@ while row < len(ballotsdf.index):
         nm = get_image_name(ballotsdf['JPGNumber'][row])
         im = Image.open(nm)
         im.show()
-        for race_no in range(0, len(bubbles_on_page[pt])):
+        for race_no in range(0, len(page_layout_bubbles[pl])):
             bad_input = 1
             while bad_input == 1:
                 bad_input = 0
@@ -134,8 +134,8 @@ while row < len(ballotsdf.index):
                     break
                 elif labels == 'undo':
                     row = prev.pop()
-                    for race_no2 in range(0, len(bubbles_on_page[pt])):
-                        for i in range(0, bubbles_on_page[pt][race_no2]):
+                    for race_no2 in range(0, len(page_layout_bubbles[pl])):
+                        for i in range(0, page_layout_bubbles[pl][race_no2]):
                             ballotsdf['Race ' +
                                       str(race_no2) + ' Bubble ' + str(i)][row] = -1
                     break
@@ -150,8 +150,8 @@ while row < len(ballotsdf.index):
                     bad_input = 1
                     print("Ballots labeled on this run: ", len(prev) - 1)
                     bubbles = 0
-                    for i in range(0, len(bubbles_on_page[pt])):
-                        for j in range(0, bubbles_on_page[pt][i]):
+                    for i in range(0, len(page_layout_bubbles[pl])):
+                        for j in range(0, page_layout_bubbles[pl][i]):
                             bubbles += 1
                     print("Bubbles labeled on this run: ",
                           (len(prev) - 1) * bubbles)
@@ -161,7 +161,7 @@ while row < len(ballotsdf.index):
                             ballots += 1
                     print("Ballots to go: ", ballots)
                     print("Bubbles to go: ", ballots * bubbles)
-                elif len(labels) != bubbles_on_page[pt][race_no]:
+                elif len(labels) != page_layout_bubbles[pl][race_no]:
                     bad_input = 1
                 else:
                     for ch in labels:
@@ -169,7 +169,7 @@ while row < len(ballotsdf.index):
                             bad_input = 1
             if labels == 'stop' or labels == 'undo':
                 break
-            for i in range(0, bubbles_on_page[pt][race_no]):
+            for i in range(0, page_layout_bubbles[pl][race_no]):
                 ballotsdf['Race ' + str(race_no) +
                           ' Bubble ' + str(i)][row] = labels[i]
         im.close()
@@ -180,8 +180,8 @@ while row < len(ballotsdf.index):
     if labels != 'undo':
         row += 1
         if row == (len(ballotsdf.index)):
-            print("Finished labelling page type: ", pt)
-ballotsdf.to_csv('Page Types/' + pt + '/labels.csv', index=False)
+            print("Finished labelling page type: ", pl)
+ballotsdf.to_csv('Page Types/' + pl + '/labels.csv', index=False)
 """
 import os
 
@@ -194,8 +194,8 @@ for r in races:
 
       # writing the fields
       labels = ['JPGNumber']
-      for i in range(0, len(bubbles_on_page[r])):
-        for j in range(0, bubbles_on_page[r][i]):
+      for i in range(0, len(page_layout_bubbles[r])):
+        for j in range(0, page_layout_bubbles[r][i]):
           labels.append('Page Types ' + str(i) + ' Bubble ' + str(j))
       csvwriter.writerow(labels)
 

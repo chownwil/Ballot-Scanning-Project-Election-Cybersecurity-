@@ -119,11 +119,11 @@ ballotsdf = pd.read_csv('Page Types/' + pt + '/labels.csv')
 row = 0
 prev = [0]
 while row < len(ballotsdf.index):
+    labels = ''
     if ballotsdf['Race 0 Bubble 0'][row] == -1:
         nm = get_image_name(ballotsdf['JPGNumber'][row])
         im = Image.open(nm)
         im.show()
-        labels = ''
         for race_no in range(0, len(bubbles_on_page[pt])):
             bad_input = 1
             while bad_input == 1:

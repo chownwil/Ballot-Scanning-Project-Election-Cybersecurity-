@@ -28,6 +28,7 @@ import os
 import csv
 import pandas as pd
 import numpy as np
+import easygui
 
 
 def get_image_name(ballot_number):
@@ -55,15 +56,19 @@ def get_image_name(ballot_number):
 
 pagesdf = pd.read_csv('pages.csv')
 
-dictionary = {'0': 'no mark',
-              '1': 'properly bubbled',
-              '2': 'X marked',
-              '3': 'check marked',
-              '4': 'lightly bubbled',
-              '5': 'partially bubbled',
-              '6': 'bubbled and crossed out',
-              '7': 'bad scan / wrong race',
-              '8': 'other'}
+mark_dictionary = {'0': 'no mark',
+                   '1': 'properly bubbled',
+                   '2': 'X marked',
+                   '3': 'check marked',
+                   '4': 'lightly bubbled',
+                   '5': 'partially bubbled',
+                   '6': 'bubbled and crossed out',
+                   '7': 'bad scan / wrong race',
+                   '8': 'other mark',
+                   'open': 'Reopen Image',
+                   'undo': 'Undo',
+                   'count': 'Print run info'}
+
 page_layout_bubbles = {'Zachary B. Thoma and Dan Hauser': [7, 3],
                        'David R. Couch': [9],
                        'Kathleen A. Fairchild': [7],
@@ -86,105 +91,112 @@ page_layout_bubbles = {'Zachary B. Thoma and Dan Hauser': [7, 3],
                        'Gaye Gerdts': [3]
                        }
 
-page_types = ['Zachary B. Thoma and Dan Hauser',
-              'David R. Couch',
-              'Kathleen A. Fairchild',
-              'Nicole Chase',
-              'Michael Caldwell',
-              'Natalie Zall',
-              'Sarie Toste Zachary B. Thoma and Dan Hauser',
-              'Sherry Dalziel',
-              'Kerry Gail Watty',
-              'Sarie Toste (left)',
-              'Emil Feierabend and Jerry Hansen',
-              'Sarie Toste and Dan Hauser',
-              'Sarie Toste (right)',
-              'Erin Maureen Taylor',
-              'Sarie Toste and David R. Couch',
-              'Tim Hooven',
-              'Tom Chapman',
-              'Dan Hauser',
-              'John Ash',
-              'Gaye Gerdts']
+choice_dictionary = {
+    '0': 'Zachary B. Thoma and Dan Hauser',
+    '1': 'David R. Couch',
+    '2': 'Kathleen A. Fairchild',
+    '3': 'Nicole Chase',
+    '4': 'Michael Caldwell',
+    '5': 'Natalie Zall',
+    '6': 'Sarie Toste Zachary B. Thoma and Dan Hauser',
+    '7': 'Sherry Dalziel',
+    '8': 'Kerry Gail Watty',
+    '9': 'Sarie Toste (left)',
+    '10': 'Emil Feierabend and Jerry Hansen',
+    '11': 'Sarie Toste and Dan Hauser',
+    '12': 'Sarie Toste (right)',
+    '13': 'Erin Maureen Taylor',
+    '14': 'Sarie Toste and David R. Couch',
+    '15': 'Tim Hooven',
+    '16': 'Tom Chapman',
+    '17': 'Dan Hauser',
+    '18': 'John Ash',
+    '19': 'Gaye Gerdts'}
 
 # """"
+prompt1 = 'Enter a race number\n'
+prompt1 += '------------------------------------\n'
+for i in choice_dictionary:
+    prompt1 += i + ': ' + choice_dictionary[i] + '\n'
 
-for i in range(0, len(page_types)):
-    print(i, ': ', page_types[i])
-choice = int(input('Choose a race number:'))
-pl = page_types[choice]
+prompt2 = '-------------------------------------\n'
+for i in mark_dictionary:
+    prompt2 += i + ': ' + mark_dictionary[i] + '\n'
 
-
-ballotsdf = pd.read_csv('Page Types/' + pl + '/labels.csv')
-
-row = 0
-prev = [0]
-while row < len(ballotsdf.index):
-    labels = ''
-    if ballotsdf['Race 0 Bubble 0'][row] == -1:
-        nm = get_image_name(ballotsdf['JPGNumber'][row])
-        im = Image.open(nm)
-        im.show()
-        for race_no in range(0, len(page_layout_bubbles[pl])):
-            bad_input = 1
-            while bad_input == 1:
-                bad_input = 0
-                labels = input(
-                    'Enter Ballot ' + str(ballotsdf['JPGNumber'][row]) + ' Race ' + str(race_no) + ' labels: ')
-                if labels == 'stop':
-                    break
-                elif labels == 'undo':
-                    row = prev.pop()
-                    for race_no2 in range(0, len(page_layout_bubbles[pl])):
-                        for i in range(0, page_layout_bubbles[pl][race_no2]):
-                            ballotsdf['Race ' +
-                                      str(race_no2) + ' Bubble ' + str(i)][row] = -1
-                    break
-                elif labels == 'print':
+keep_reading = 1
+while keep_reading:
+    choice = easygui.enterbox(msg=prompt1)
+    if choice == None:
+        keep_reading = 0
+        continue
+    if choice not in choice_dictionary:
+        continue
+    else:
+        pl = choice_dictionary[choice]
+        ballotsdf = pd.read_csv('Page Types/' + pl + '/labels.csv')
+        row = 0
+        prev = [0]
+        while row < len(ballotsdf.index):
+            labels = ''
+            if ballotsdf['Race 0 Bubble 0'][row] == -1:
+                nm = get_image_name(ballotsdf['JPGNumber'][row])
+                im = Image.open(nm)
+                im.show()
+                for race_no in range(0, len(page_layout_bubbles[pl])):
                     bad_input = 1
-                    for i in dictionary:
-                        print(i, ": ", dictionary[i])
-                elif labels == 'open':
-                    bad_input = 1
-                    im.show()
-                elif labels == 'count':
-                    bad_input = 1
-                    print("Ballots labeled on this run: ", len(prev) - 1)
-                    bubbles = 0
-                    for i in range(0, len(page_layout_bubbles[pl])):
-                        for j in range(0, page_layout_bubbles[pl][i]):
-                            bubbles += 1
-                    print("Bubbles labeled on this run: ",
-                          (len(prev) - 1) * bubbles)
-                    ballots = 1
-                    for i in range(row, len(ballotsdf.index)):
-                        if ballotsdf['Race 0 Bubble 0'][i] == -1:
-                            ballots += 1
-                    print("Ballots to go: ", ballots)
-                    print("Bubbles to go: ", ballots * bubbles)
-                elif len(labels) != page_layout_bubbles[pl][race_no]:
-                    bad_input = 1
-                else:
-                    for ch in labels:
-                        if ch not in dictionary:
+                    while bad_input == 1:
+                        bad_input = 0
+                        labels = easygui.enterbox(msg='Enter Ballot ' + str(ballotsdf['JPGNumber'][row]) + ' Race ' + str(
+                            race_no) + ' labels:\n' + prompt2)
+                        if labels == None:
+                            break
+                        elif labels == 'undo':
+                            row = prev.pop()
+                            for race_no2 in range(0, len(page_layout_bubbles[pl])):
+                                for i in range(0, page_layout_bubbles[pl][race_no2]):
+                                    ballotsdf['Race ' +
+                                              str(race_no2) + ' Bubble ' + str(i)][row] = -1
+                            break
+                        elif labels == 'open':
                             bad_input = 1
-            if labels == 'stop' or labels == 'undo':
-                break
-            for i in range(0, page_layout_bubbles[pl][race_no]):
-                ballotsdf['Race ' + str(race_no) +
-                          ' Bubble ' + str(i)][row] = labels[i]
-        im.close()
-        if labels != 'stop' and labels != 'undo':
-            prev.append(row)
-        elif labels == 'stop':
-            break
-    if labels != 'undo':
-        row += 1
-        if row == (len(ballotsdf.index)):
-            print("Finished labelling page type: ", pl)
-ballotsdf.to_csv('Page Types/' + pl + '/labels.csv', index=False)
-
-os.system('python3 summary.py')
+                            im.show()
+                        elif labels == 'count':
+                            bad_input = 1
+                            print("Ballots labeled on this run: ", len(prev) - 1)
+                            bubbles = 0
+                            for i in range(0, len(page_layout_bubbles[pl])):
+                                for j in range(0, page_layout_bubbles[pl][i]):
+                                    bubbles += 1
+                            print("Bubbles labeled on this run: ",
+                                  (len(prev) - 1) * bubbles)
+                            ballots = 1
+                            for i in range(row, len(ballotsdf.index)):
+                                if ballotsdf['Race 0 Bubble 0'][i] == -1:
+                                    ballots += 1
+                            print("Ballots to go: ", ballots)
+                            print("Bubbles to go: ", ballots * bubbles)
+                        elif len(labels) != page_layout_bubbles[pl][race_no]:
+                            bad_input = 1
+                        else:
+                            for ch in labels:
+                                if ch not in mark_dictionary or int(ch) >= 9:
+                                    bad_input = 1
+                    if labels == None or labels == 'undo':
+                        break
+                    for i in range(0, page_layout_bubbles[pl][race_no]):
+                        ballotsdf['Race ' + str(race_no) +
+                                  ' Bubble ' + str(i)][row] = labels[i]
+                im.close()
+                if labels != None and labels != 'undo':
+                    prev.append(row)
+                elif labels == None:
+                    break
+            if labels != 'undo':
+                row += 1
+                if row == (len(ballotsdf.index)):
+                    print("Finished labelling page type: ", pl)
+        ballotsdf.to_csv('Page Types/' + pl + '/labels.csv', index=False)
+        os.system('python3 summary.py')
 """
 import os
 

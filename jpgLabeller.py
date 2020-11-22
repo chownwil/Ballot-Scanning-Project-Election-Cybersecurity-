@@ -138,7 +138,12 @@ while keep_reading:
         prev = [0]
         while row < len(ballotsdf.index):
             labels = ''
-            if ballotsdf['Race 0 Bubble 0'][row] == -1:
+            islabelled = 1
+            for i in range(0, len(page_layout_bubbles[pl])):
+                if ballotsdf['Race ' + str(i) + ' Bubble 0'][row] == -1:
+                    islabelled = 0
+                    break
+            if islabelled == 0:
                 nm = get_image_name(ballotsdf['JPGNumber'][row])
                 im = Image.open(nm)
                 im.show()

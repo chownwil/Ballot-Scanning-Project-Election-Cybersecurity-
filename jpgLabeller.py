@@ -1,16 +1,16 @@
 """
 HOW TO USE jpgLabeler.py:
 
-jpgLabeler.py should be in the directory containing the '00', '01', '02', '03' 
-folders and pages.csv. 
+jpgLabeler.py should be in the directory containing the '00', '01', '02', '03'
+folders and pages.csv.
 
-When calling the program, you will now be prompled to select a page type from 
+When calling the program, you will now be prompled to select a page type from
 the list. The program will iterate over ballots and races for you automatically.
-When prompled to enter enter data for a race, you should enter one digit per 
+When prompled to enter enter data for a race, you should enter one digit per
 bubble using the dictionary of marks.
 
 Example: In a 3 bubble race, enter labels in the form 001 to indicate that only
-the bottom candidate was bubbled in. See 
+the bottom candidate was bubbled in. See
 
 Instead of entering labels for a race, you can instead type a command:
 
@@ -29,7 +29,7 @@ import csv
 import pandas as pd
 import numpy as np
 import easygui
-
+import time
 
 def get_image_name(ballot_number):
     top = int(ballot_number / 10000)
@@ -114,6 +114,7 @@ choice_dictionary = {
     '19': 'Gaye Gerdts'}
 
 # """"
+doSleep = easygui.ynbox(msg='Wait to to open enterbox [y/n]? (Yes if using a Mac)')
 prompt1 = 'Enter a race number\n'
 prompt1 += '------------------------------------\n'
 for i in choice_dictionary:
@@ -138,10 +139,17 @@ while keep_reading:
         prev = [0]
         while row < len(ballotsdf.index):
             labels = ''
-            if ballotsdf['Race 0 Bubble 0'][row] == -1:
+            islabelled = 1
+            for i in range(0, len(page_layout_bubbles[pl])):
+                if ballotsdf['Race ' + str(i) + ' Bubble 0'][row] == -1:
+                    islabelled = 0
+                    break
+            if islabelled == 0:
                 nm = get_image_name(ballotsdf['JPGNumber'][row])
                 im = Image.open(nm)
                 im.show()
+                if doSleep:
+                    time.sleep(1)
                 for race_no in range(0, len(page_layout_bubbles[pl])):
                     bad_input = 1
                     while bad_input == 1:

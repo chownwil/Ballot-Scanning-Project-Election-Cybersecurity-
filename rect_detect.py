@@ -61,8 +61,8 @@ im_gs = cv2.fastNlMeansDenoising(img, h=3)
 
 
 _, threshold = cv2.threshold(im_gs, 240, 255, cv2.THRESH_BINARY)
-contours, _ = cv2.findContours(
-    threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+contours, _ = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+bounds = None
 for cnt in contours:
     approx = cv2.approxPolyDP(cnt, 0.01*cv2.arcLength(cnt, True), True)
     cv2.drawContours(img, [approx], 0, (0), 5)
@@ -72,6 +72,7 @@ for cnt in contours:
         continue
     print(cv2.contourArea(cnt))
     print(approx)
+    bounds = approx
     if len(approx) == 3:
         cv2.putText(im_gs, "Triangle", (x, y), font, 0.5, (0, 0, 255))
     elif len(approx) == 4:
@@ -83,22 +84,18 @@ for cnt in contours:
     else:
         cv2.putText(im_gs, "Circle", (x, y), font, 0.5, (0, 0, 255))
 breakpoint()
-imageio.imwrite('shapes.jpg', im_gs[106:, 77:])
+import imageio; imageio.imwrite('shapes.jpg', im_gs[398:,640:])
 
 
-"""
-Genius Soni Code to Test Pix
-1. copy in 3D nested list from cropper.py; fill in bubble coords
-2. change im_tl variables to top-left coords of the image
-3. uncomment and run
-4. use 'c' in pdb to continue (lol I didnt know this, so kept typing 'next' like a noob)
-"""
-# temp = [ [ [11, 222], [11, 297], [11, 372], [11, 447], [11, 522], [11, 603], [11, 685] ], [ [560, 300], [560, 375], [560, 450], [560, 525], [560, 600], [560, 675], [560, 755] ], [ [560, 979], [560, 1054], [560, 1129] ] ]
-# im_tl_x = 105
-# im_tl_y = 106
-# for race in temp:
-#     for t in race:
-#         x = t[0]
-#         y = t[1]
-#         imageio.imwrite('shapes.jpg', im_gs[y+im_tl_y:y+im_tl_y+40, x+im_tl_x:x+im_tl_x+60])
-#         breakpoint()
+# I'm using the code below to test the bubble positions. Replace 103 and 105 with rectangle positions for this ballot
+
+bubbles =  [ [557, 320], [557, 396], [557, 471] ]
+
+top_left = min(bounds, key=lambda x:sum(x[0]))[0]
+
+top_left_x = top_left[0]
+top_left_y = top_left[1]
+
+for t in bubbles:
+    x=t[0];y=t[1];import imageio; imageio.imwrite('shapes.jpg', im_gs[y+top_left_y:y+top_left_y+40,x+top_left_x:x+top_left_x+60])
+    breakpoint()

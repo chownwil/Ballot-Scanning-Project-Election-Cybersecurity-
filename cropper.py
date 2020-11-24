@@ -20,13 +20,14 @@ ballotToCrop["Emil Feierabend and Jerry Hansen"] = [ [ [], [], [] ] , [ [], [], 
 ballotToCrop["Sarie Toste (left)"] = [ [ [], [], [], [], [], [], [] ] ]
 ballotToCrop["Kerry Gail Watty"] = [ [ [], [], [] ] ]
 ballotToCrop["Sherry Dalziel"] = [ [ [], [], [], [], [], [], [] ] ]
-ballotToCrop["Sarie Toste Zachary B. Thoma and Dan Hauser"] = [ [ [], [], [], [], [], [], [] ], [ [], [], [], [], [], [], [] ], [ [], [], [] ] ]
-ballotToCrop["Natalie Zall"] = [ [ [], [], [], [], [], [], [], [] ] ]
-ballotToCrop["Michael Caldwell"] = [ [ [], [], [], [], [] ] ]
-ballotToCrop["Nicole Chase"] = [ [ [], [], [], [], [], [], [] ] ]
-ballotToCrop["Kathleen A. Fairchild"] = [ [ [], [], [], [], [], [], [] ] ]
-ballotToCrop["David R. Couch"] = [ [ [], [], [], [], [], [], [], [], [] ] ]
-ballotToCrop["Zachary B. Thoma and Dan Hauser"] = [ [ [], [], [], [], [], [], [] ], [ [], [], [] ] ]
+ballotToCrop["Sarie Toste Zachary B. Thoma and Dan Hauser"] = [ [ [11, 222], [11, 297], [11, 372], [11, 447], [11, 522], [11, 603], [11, 685] ], [ [560, 300], [560, 375], [560, 450], [560, 525], [560, 600], [560, 675], [560, 755] ], [ [560, 979], [560, 1054], [560, 1129] ] ]
+ballotToCrop["Natalie Zall"] = [ [ [562, 285], [562, 360], [562, 435], [562, 510], [562, 585], [562, 660], [562, 742], [562, 824] ] ]
+ballotToCrop["Michael Caldwell"] = [ [ [560, 303], [560, 378], [560, 453], [560, 528], [560, 609] ] ]
+ballotToCrop["Nicole Chase"] = [ [ [562, 287], [562, 362], [562, 437], [562, 512], [562, 587], [562, 669], [562, 751] ] ]
+ballotToCrop["Kathleen A. Fairchild"] = [ [ [560, 314], [560, 389], [560, 464], [560, 539], [560, 615], [560, 695], [560, 777] ] ]
+ballotToCrop["David R. Couch"] = [ [ [10, 305], [10, 380], [10, 455], [10, 530], [10, 605], [10, 650], [10, 725], [10, 807], [10, 889] ] ]
+ballotToCrop["Zachary B. Thoma and Dan Hauser"] = [[[11, 304], [11, 381], [11, 455], [12, 530],
+         [12, 605], [12, 680], [12, 760]], [[13, 986], [13, 1061], [13, 1136]]]
 
 
 

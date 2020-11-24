@@ -3,7 +3,7 @@ import numpy as np
 
 
 font = cv2.FONT_HERSHEY_COMPLEX
-img = cv2.imread("00/00/000029.jpg", cv2.IMREAD_GRAYSCALE)
+img = cv2.imread("00/08/000857.jpg", cv2.IMREAD_GRAYSCALE)
 
 max_skew = 10
 height, width = img.shape
@@ -61,6 +61,7 @@ im_gs = cv2.fastNlMeansDenoising(img, h=3)
 
 _, threshold = cv2.threshold(im_gs, 240, 255, cv2.THRESH_BINARY)
 contours, _ = cv2.findContours(threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+bounds = None
 for cnt in contours:
     approx = cv2.approxPolyDP(cnt, 0.01*cv2.arcLength(cnt, True), True)
     cv2.drawContours(img, [approx], 0, (0), 5)
@@ -70,6 +71,7 @@ for cnt in contours:
         continue
     print(cv2.contourArea(cnt))
     print(approx)
+    bounds = approx
     if len(approx) == 3:
         cv2.putText(im_gs, "Triangle", (x, y), font, 0.5, (0,0,255))
     elif len(approx) == 4:
@@ -86,7 +88,13 @@ import imageio; imageio.imwrite('shapes.jpg', im_gs[398:,640:])
 
 # I'm using the code below to test the bubble positions. Replace 103 and 105 with rectangle positions for this ballot
 
-# temp =  [ [558, 291], [558, 365], [558, 439], [558, 513], [558, 589], [557, 664], [557, 746], [556, 827] ] 
-# for t in temp:
-#     x=t[0];y=t[1];import imageio; imageio.imwrite('shapes.jpg', im_gs[y+106:y+106+40,x+81:x+81+60])
-#     breakpoint()
+bubbles =  [ [557, 320], [557, 396], [557, 471] ]
+
+top_left = min(bounds, key=lambda x:sum(x[0]))[0]
+
+top_left_x = top_left[0]
+top_left_y = top_left[1]
+
+for t in bubbles:
+    x=t[0];y=t[1];import imageio; imageio.imwrite('shapes.jpg', im_gs[y+top_left_y:y+top_left_y+40,x+top_left_x:x+top_left_x+60])
+    breakpoint()

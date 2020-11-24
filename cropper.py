@@ -6,11 +6,11 @@ import scipy.misc
 
 ballotToCrop = {}
 
-# offset from the top left for each bubble in the format: [left_x, right_x, top_y, bottom_y]
-ballotToCrop["Tim Hooven"] = [ [ [], [], [], [], [], [], [], [] ] ]
-ballotToCrop["Sarie Toste and David R. Couch"] = [ [ [], [], [], [], [], [], [] ], [ [], [], [], [], [], [], [], [], [] ] ]
-ballotToCrop["Tom Chapman"] = [ [ [], [], [], [], [], [], [] ] ]
-ballotToCrop["Dan Hauser"] = [ [ [], [], [] ] ]
+# offset from the top left for each bubble in the format: [left_x, top_y]
+ballotToCrop["Tim Hooven"] = [ [ [558, 291], [558, 365], [558, 439], [558, 513], [558, 589], [557, 664], [557, 746], [556, 827] ] ]
+ballotToCrop["Sarie Toste and David R. Couch"] = [ [ [12, 220], [13, 296], [13, 370], [13, 446], [13, 521], [13, 601], [14, 683] ], [ [560, 296], [560, 371], [560, 446], [561, 522], [561, 596], [561, 640], [561, 714], [562, 795], [562, 876] ] ]
+ballotToCrop["Tom Chapman"] = [ [ [558, 288], [558, 363], [558, 438], [558, 513], [558, 588], [558, 669], [558, 750] ] ]
+ballotToCrop["Dan Hauser"] = [ [ [11, 355], [11, 430], [10, 505] ] ]
 ballotToCrop["John Ash"] = [ [ [], [], [], [] ] ]
 ballotToCrop["Gaye Gerdts"] = [ [ [], [], [] ] ]
 ballotToCrop["Erin Maureen Taylor"] = [ [ [], [], [], [], [], [], [] ] ]
@@ -37,7 +37,7 @@ import cv2
 import numpy as np
 import scipy.misc
 
-im = cv2.imread('00/00/000007.jpg')
+im = cv2.imread('00/00/000001.jpg')
 max_skew = 10
 # breakpoint()
 height, width, _ = im.shape
@@ -104,7 +104,7 @@ bottom = 3 * height // 2
 # (It will not change orginal image)
 im1 = im_gs[390:430,635:695]
 
-# breakpoint()
+breakpoint()
 
 import imageio; imageio.imwrite('file_name_4.jpg', im1)
 

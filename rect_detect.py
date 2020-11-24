@@ -3,7 +3,7 @@ import numpy as np
 
 
 font = cv2.FONT_HERSHEY_COMPLEX
-img = cv2.imread("00/00/000005.jpg", cv2.IMREAD_GRAYSCALE)
+img = cv2.imread("02/89/028930.jpg", cv2.IMREAD_GRAYSCALE)
 
 max_skew = 10
 height, width = img.shape
@@ -82,7 +82,12 @@ for cnt in contours:
         cv2.putText(im_gs, "Circle", (x, y), font, 0.5, (0,0,255))
 breakpoint()
 import imageio; imageio.imwrite('shapes.jpg', im_gs[398:,640:])
-# cv2.imshow("shapes", img)
-# cv2.imshow("Threshold", threshold)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
+
+
+# I'm using the code below to test the bubble positions. Replace 103 and 105 with rectangle positions for this ballot
+
+# temp =  [ [11, 355], [11, 430], [10, 505] ]
+
+# for t in temp:
+#     x=t[0];y=t[1];import imageio; imageio.imwrite('shapes.jpg', im_gs[y+103:y+103+40,x+105:x+105+60])
+#     breakpoint()

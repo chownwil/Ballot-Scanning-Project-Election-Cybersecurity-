@@ -120,7 +120,6 @@ for i in choice_dictionary:
 prompt2 = '-------------------------------------\n'
 for i in mark_dictionary:
     prompt2 += i + ': ' + mark_dictionary[i] + '\n'
-
 keep_reading = 1
 while keep_reading:
     choice = easygui.enterbox(msg=prompt1)

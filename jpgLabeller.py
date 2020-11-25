@@ -53,9 +53,6 @@ def get_image_name(ballot_number):
     image_nm += str(ballot_number) + '.jpg'
     return image_nm
 
-
-pagesdf = pd.read_csv('pages.csv')
-
 mark_dictionary = {'0': 'no mark',
                    '1': 'properly bubbled',
                    '2': 'X marked',
@@ -209,6 +206,8 @@ while keep_reading:
 import os
 
 os.makedirs('Page Types')
+
+pagesdf = pd.read_csv('pages.csv')
 
 for r in races:
     os.makedirs('Page Types/' + r)

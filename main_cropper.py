@@ -122,6 +122,8 @@ def main():
 	for row in reader:
 		k, v = row
 		page_mappings[k] = v
+		
+	file1 = open("log_file.txt","w")
 
 	for outside_folder in outside_folders:
 		for in_folder in range(100):
@@ -137,6 +139,7 @@ def main():
 
 				if os.path.exists(image_path):
 					print('sucess', image_path, jpg_number)
+					file1.write("{} \n".format(image_path))
 					jpg_number += 1
 					rect_detect(image_path)
 				else:
@@ -144,6 +147,7 @@ def main():
 					break
 
 	print('total images scanned:', jpg_number - 1)
+	file1.close()
 
     
     

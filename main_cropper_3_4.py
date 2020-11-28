@@ -114,11 +114,11 @@ def rect_detect(filepath):
 			t = bubbles[i][j]
 			x=t[0]
 			y=t[1]
-			imageio.imwrite('bubbles3_4/{}_{}_{}_{}.jpg'.format(jpg_number,pagetype,i,j), im_gs[y+top_left_y:y+top_left_y+40,x+top_left_x:x+top_left_x+60])
+			imageio.imwrite('bubbles2_4/{}_{}_{}_{}.jpg'.format(jpg_number,pagetype,i,j), im_gs[y+top_left_y:y+top_left_y+40,x+top_left_x:x+top_left_x+60])
 
 def main():
-	outside_folders = ['03']
-	jpg_number = 34200
+	outside_folders = ['02']
+	jpg_number = 28000
 
 	reader = csv.reader(open('pages.csv', 'r'))
 
@@ -130,7 +130,7 @@ def main():
 	file1 = open("log_file.txt","w")
 
 	for outside_folder in outside_folders:
-		for in_folder in range(42,57):
+		for in_folder in range(80,101):
 			
 			inside_folder = str(in_folder)
 			inside_folder = inside_folder.zfill(2)

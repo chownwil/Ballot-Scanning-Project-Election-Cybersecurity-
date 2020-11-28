@@ -95,7 +95,7 @@ def rect_detect(filepath):
 	pagetype_name = page_mappings[str(int(jpg_number))]
 	try:
 		pagetype = page_types[pagetype_name]
-    return
+    		return
 	except:
 		print("no pagetype: {}".format(pagetype_name))
 	bubbles = ballotToCrop[pagetype_name]

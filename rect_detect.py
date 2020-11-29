@@ -4,7 +4,7 @@ import numpy as np
 
 
 font = cv2.FONT_HERSHEY_COMPLEX
-img = cv2.imread("00/55/005535.jpg", cv2.IMREAD_GRAYSCALE)
+img = cv2.imread("00/33/003354.jpg", cv2.IMREAD_GRAYSCALE)
 
 max_skew = 10
 height, width = img.shape
@@ -37,18 +37,21 @@ for cnt in contours:
     else:
         cv2.putText(im_gs, "Circle", (x, y), font, 0.5, (0, 0, 255))
 breakpoint()
-import imageio; imageio.imwrite('shapes.jpg', im_gs[398:,640:])
+import imageio; imageio.imwrite('shapes_1.jpg', im_gs[:,:])
 
 
 # I'm using the code below to test the bubble positions. Replace 103 and 105 with rectangle positions for this ballot
 
-bubbles =  [ [557, 320], [557, 396], [557, 471] ]
-
+# race = [ [ [10, 225] , [10, 300], [10, 375], [10, 450], [12, 525], [12, 600], [12, 675] ], [ [554, 357], [554, 423], [554, 512] ] ]
+race = [ [ [10, 354], [10, 429], [10, 503], [10, 578] ] ]
 top_left = min(bounds, key=lambda x:sum(x[0]))[0]
 
 top_left_x = top_left[0]
 top_left_y = top_left[1]
 
-for t in bubbles:
-    x=t[0];y=t[1];import imageio; imageio.imwrite('shapes.jpg', im_gs[y+top_left_y:y+top_left_y+40,x+top_left_x:x+top_left_x+60])
-    breakpoint()
+for r in race:
+    for t in r:
+        x=t[0];y=t[1];import imageio; imageio.imwrite('shapes.jpg', im_gs[y+top_left_y:y+top_left_y+40,x+top_left_x:x+top_left_x+60])
+        print(x,y)
+        breakpoint()
+    print('next race')

@@ -16,7 +16,7 @@ class CNN(nn.Module):
 		self.conv1 = nn.Conv2d(1, 32, kernel_size=5)
 		self.conv2 = nn.Conv2d(32, 32, kernel_size=5)
 		self.conv3 = nn.Conv2d(32,64, kernel_size=5)
-		self.fc1 = nn.Linear(16*16*64, 256)
+		self.fc1 = nn.Linear(3*3*64, 256)
 		self.fc2 = nn.Linear(256, 7) # edit based on classes
 
 	def forward(self, x):
@@ -41,6 +41,7 @@ def fit(model, train_loader):
 	for epoch in range(EPOCHS):
 		correct = 0
 		for batch_idx, (X_batch, y_batch) in enumerate(train_loader):
+			breakpoint()
 			var_X_batch = Variable(X_batch).float()
 			var_y_batch = Variable(y_batch)
 			optimizer.zero_grad()
@@ -80,26 +81,69 @@ def main():
 			Y[i] -= 2
 	
 	X = []
-	with open("X0.csv", 'w', newline='') as myfile:
-		rr = csv.reader(myfile, quoting=csv.QUOTE_ALL)
+	with open("X0.csv", 'r', newline='') as myfile:
+		rr = csv.reader(myfile)
 		for x in rr:
+			x = [int(x_temp) for x_temp in x]
+			x = np.reshape(x, (1,28,28))
 			X.append(x)
-	with open("X1.csv", 'w', newline='') as myfile:
-		rr = csv.reader(myfile, quoting=csv.QUOTE_ALL)
+	
+	with open("X1.csv", 'r', newline='') as myfile:
+		rr = csv.reader(myfile)
 		for x in rr:
+			x = [int(x_temp) for x_temp in x]
+			x = np.reshape(x, (1,28,28))
 			X.append(x)
-	with open("X2.csv", 'w', newline='') as myfile:
-		rr = csv.reader(myfile, quoting=csv.QUOTE_ALL)
+			
+	with open("X2.csv", 'r', newline='') as myfile:
+		rr = csv.reader(myfile)
 		for x in rr:
+			x = [int(x_temp) for x_temp in x]
+			x = np.reshape(x, (1,28,28))
 			X.append(x)
-
+			
+	with open("X3.csv", 'r', newline='') as myfile:
+		rr = csv.reader(myfile)
+		for x in rr:
+			x = [int(x_temp) for x_temp in x]
+			x = np.reshape(x, (1,28,28))
+			X.append(x)
+	"""
+	with open("X1.csv", 'r', newline='') as myfile:
+		breakpoint()
+		rr = csv.reader(myfile)
+		for x in rr:
+			im = []
+			for x_temp in x:
+				im.append(x_temp.strip("[]").replace("\n","").split(" "))
+			X.append(im)
+	with open("X2.csv", 'r', newline='') as myfile:
+		rr = csv.reader(myfile)
+		for x in rr:
+			im = []
+			for x_temp in x:
+				im.append(x_temp.strip("[]").replace("\n","").split(" "))
+			X.append(im)
+	"""
 
 	BATCH_SIZE = 32
 
+	print('X shape', len(X))
+	print('Y shape', len(Y))
+
+
 	X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.15)
 
-	torch_X_train = torch.LongTensor(X_train)
-	torch_y_train = torch.from_numpy(y_train).type(torch.LongTensor) 
+	torch_X_train = torch.FloatTensor(X_train)
+	torch_y_train = torch.from_numpy(y_train).type(torch.FloatTensor) 	
+	torch_X_test = torch.FloatTensor(X_test)
+	torch_y_test = torch.from_numpy(y_test).type(torch.FloatTensor) 
+
+	# torch_X_train_tensor = torch.tensor(torch_X_train, dtype=torch.long, device='cpu')
+	# torch_y_train_tensor = torch.tensor(torch_y_train, dtype=torch.long, device='cpu')
+
+	# torch_X_test_tensor = torch.tensor(torch_X_test, dtype=torch.long, device='cpu')
+	# torch_y_test_tensor = torch.tensor(torch_y_test, dtype=torch.long, device='cpu')
 
 	# Pytorch train and test sets
 	train = torch.utils.data.TensorDataset(torch_X_train,torch_y_train)
@@ -110,19 +154,14 @@ def main():
 	test_loader = torch.utils.data.DataLoader(test, batch_size = BATCH_SIZE, shuffle = False)
 
 	cnn = CNN()
+	
 	print(cnn)
-
-	breakpoint()
 
 	it = iter(train_loader)
 	X_batch, y_batch = next(it)
 	print(cnn.forward(X_batch).shape)
 
-	breakpoint()
-
 	fit(cnn,train_loader) # train
-
-	breakpoint()
 
 	evaluate(cnn) # eval
 

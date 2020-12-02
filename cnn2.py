@@ -13,6 +13,9 @@ from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Conv2D, MaxPool2D, Flatten
 from keras.utils import np_utils
+from keras.callbacks import Callback,ModelCheckpoint
+from keras.wrappers.scikit_learn import KerasClassifier
+import keras.backend as K
 
 # to calculate accuracy
 from sklearn.metrics import accuracy_score
@@ -20,6 +23,14 @@ from sklearn.metrics import accuracy_score
 # to calculate confusion matrix
 from sklearn.metrics import confusion_matrix
 
+def get_f1(y_true, y_pred): #taken from old keras source code
+	true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+	possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+	predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+	precision = true_positives / (predicted_positives + K.epsilon())
+	recall = true_positives / (possible_positives + K.epsilon())
+	f1_val = 2*(precision*recall)/(precision+recall+K.epsilon())
+	return f1_val
 
 def main():
 	ydf = pd.read_csv('y.csv')
@@ -94,6 +105,7 @@ def main():
 
 # compiling the sequential model
 	model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer='adam')
+	#use [get_f1] to do the f1-score instead of accuracy
 
 # training the model for 10 epochs
 	model.fit(X_train, Y_train, batch_size=128, epochs=1, validation_data=(X_test, Y_test))

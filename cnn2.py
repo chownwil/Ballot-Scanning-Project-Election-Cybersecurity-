@@ -13,6 +13,8 @@ from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Conv2D, MaxPool2D, Flatten
 from keras.utils import np_utils
+
+#used for the f1-score (get_f1)
 from keras.callbacks import Callback,ModelCheckpoint
 from keras.wrappers.scikit_learn import KerasClassifier
 import keras.backend as K
@@ -23,6 +25,7 @@ from sklearn.metrics import accuracy_score
 # to calculate confusion matrix
 from sklearn.metrics import confusion_matrix
 
+#an alternative metric to accuracy
 def get_f1(y_true, y_pred): #taken from old keras source code
 	true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
 	possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))

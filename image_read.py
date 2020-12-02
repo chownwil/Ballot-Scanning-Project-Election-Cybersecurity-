@@ -44,14 +44,27 @@ for page in completed_pages:
 
 glob_list.sort()
 
-breakpoint()
 # glob_list = sorted(glob.glob("bubbles_final/??????_[{}]_*.jpg".format(','.join(completed_pages))))
 for image_path in glob_list:
 	image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-	image = cv2.resize(image, (32, 32))
+	image = cv2.resize(image, (28, 28))
 	X.append(image)
 
-breakpoint()
-
-'bubbles_final/??????_(1|2)_*.jpg'
-
+count = 0
+with open("X0.csv", 'w', newline='') as myfile1, open("X1.csv", 'w', newline='') as myfile2, open("X2.csv", 'w', newline='') as myfile3, open("X3.csv", 'w', newline='') as myfile4:
+	wr = csv.writer(myfile1)
+	wr2 = csv.writer(myfile2)
+	wr3 = csv.writer(myfile3)
+	wr4 = csv.writer(myfile4)
+	for x in X:
+		print(count)
+		x1 = x.flatten()
+		if count < 20000:
+			wr.writerow(x1)
+		elif count < 40000:
+			wr2.writerow(x1)
+		elif count < 60000:
+			wr3.writerow(x1)
+		else:
+			wr4.writerow(x1)
+		count += 1

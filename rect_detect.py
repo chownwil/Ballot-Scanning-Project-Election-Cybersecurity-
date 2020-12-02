@@ -5,6 +5,8 @@ import numpy as np
 
 font = cv2.FONT_HERSHEY_COMPLEX
 img = cv2.imread("00/33/003354.jpg", cv2.IMREAD_GRAYSCALE)
+img = cv2.imread("005924_1_0_5.jpg", cv2.IMREAD_GRAYSCALE)
+
 
 max_skew = 10
 height, width = img.shape

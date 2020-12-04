@@ -188,10 +188,12 @@ def main():
 	all_classifications = [] 
 
 	# maps jpg_number to page_type from pages.csv
+	print('Reading csv')
 	for row in reader:
 		k, v = row
 		page_mappings[k] = v
-		
+	
+	print('0')
 	for outside_folder in outside_folders:
 		for in_folder in range(100):
 			
@@ -214,14 +216,16 @@ def main():
 						bubbles = rect_detect(image_path)
 						classifications = classifier(bubbles)
 						all_classifications += classifications
-						if (count % 20) == 
+						if (count % 20) == 0:
+							print(count)
 				else:
 					print('file path error:', image_path)
 					break
+	print('Updating Output')
 	outputdf = pd.read_csv('output.csv')
 	for i in range(len(all_classifications)):
 		outputdf['CNN'][i] = all_classifications[i]
-	outputdf.to_csv('output.csv', index=False)
+	outputdf.to_csv('output4.csv', index=False)
 	print('total images scanned:', count)
 
 

@@ -17,7 +17,11 @@ import imageio
 import os
 from keras.models import load_model
 
+import pandas as pd
 
+from cnn2 import get_f1 
+
+THRESHOLD = 0.95
 
 page_mappings = {}
 
@@ -47,12 +51,13 @@ ballotToCrop = {}
 # offset from the top left for each bubble in the format: [left_x, top_y]
 ballotToCrop["Sherry Dalziel"] = [ [ [558, 315], [558, 390], [558, 465], [558, 540], [558, 615], [558, 697], [558, 779] ] ]
 
-model = load_model('cnn2_model_sherry_dalziel')
+model = load_model('cnn2_model_sherry_dalziel', custom_objects={'get_f1':get_f1})
+# custom_objects={"F1Score": tfa.metrics.F1Score}
 
-# 7 x 28 x 28 x 1
-def classifier(bubbles):
-	X = [np.reshape(x, (28,28,1)) for x in bubbles]
-	X_data = np.array(X)
+# bubbles: 7 x 28 x 28 x 1
+def classifier(X_data):
+	# X = [np.reshape(x, (28,28,1)) for x in bubbles]
+	# X_data = np.array(X)
 
 	X_data = X_data.astype('float32')
 	X_data /= 255
@@ -68,21 +73,45 @@ def classifier(bubbles):
 				max_prob = bubble_type
 		
 		highest.append(max_prob)
-
+	
 	total_confidence = 1
 	for x in highest:
 		total_confidence *= x
 
-	breakpoint()
+	# compare with the threshold
+ 
+	# if less than threshold, kick the ballot to a human
+	# write 2 to the csv for every bubble
+	if total_confidence < THRESHOLD:
+		return [2,2,2,2,2,2,2]
 
-
-def rect_detect(filepath):
-	# jpg_number = filepath.split('/')[-1][:-4]
-	# pagetype_name = page_mappings[str(int(jpg_number))]
-	# if pagetype_name not in ["Sherry Dalziel"]:
-	# 	print("Wrong Race! Ballot:", filepath)
-	# 	return
+	# if more than the threshold
+	# make sure all the marks are the same type
+	# if all marks are the same type, write 0's and 1's accordingly
+	# otherwise write 2
+	prevLabel = None
+	for label in pred_labels:
+		if label == 0:
+			continue
+		if label == 5 or label == 6:
+			return [2,2,2,2,2,2,2]
+		if prevLabel == None:
+			prevLabel = label
+		elif not prevLabel == label:
+			return [2,2,2,2,2,2,2]
 	
+	out = []
+
+	for label in pred_labels:
+		if label == 0:
+			out.append(0)
+		else:
+			out.append(1)
+
+	return out
+
+
+def rect_detect(filepath):	
 	bubbles = ballotToCrop["Sherry Dalziel"]
 
 	font = cv2.FONT_HERSHEY_COMPLEX
@@ -150,47 +179,50 @@ def main():
 		classifier(bubbles)
 
 
-	# outside_folders = ['00', '01', '02', '03']
-	# jpg_number = 1
+	outside_folders = ['00', '01', '02', '03']
+	jpg_number = 1
+	count = 0
 
-	# reader = csv.reader(open('pages.csv', 'r'))
+	reader = csv.reader(open('pages.csv', 'r'))
 
-	# # maps jpg_number to page_type
-	# for row in reader:
-	# 	k, v = row
-	# 	page_mappings[k] = v
+	all_classifications = [] 
+
+	# maps jpg_number to page_type from pages.csv
+	for row in reader:
+		k, v = row
+		page_mappings[k] = v
 		
-	# file1 = open("log_file.txt","w")
-
-	# for outside_folder in outside_folders:
-	# 	for in_folder in range(100):
+	for outside_folder in outside_folders:
+		for in_folder in range(100):
 			
-	# 		inside_folder = str(in_folder)
-	# 		inside_folder = inside_folder.zfill(2)
+			inside_folder = str(in_folder)
+			inside_folder = inside_folder.zfill(2)
 
 			
-	# 		for im_num in range(100):				
-	# 			im_num_path = str(jpg_number)
-	# 			image_path = im_num_path.zfill(6)
-	# 			image_path = outside_folder + '/' + inside_folder + '/' + image_path + '.jpg'
-
-	# 			if os.path.exists(image_path):
-	# 				print('sucess', image_path, jpg_number)
-	# 				file1.write("{} \n".format(image_path))
-	# 				jpg_number += 1
-	# 				rect_detect(image_path)
-	# 			else:
-	# 				print('error:', image_path)
-	# 				break
-
-	# print('total images scanned:', jpg_number - 1)
-	# file1.close()
-
-
-	
-
-
-
+			for im_num in range(100):		
+				im_num_path = str(jpg_number)
+				image_path = im_num_path.zfill(6)
+				image_path = outside_folder + '/' + inside_folder + '/' + image_path + '.jpg'
+				
+				if os.path.exists(image_path):
+					pagetype_name = page_mappings[str(jpg_number)]
+					jpg_number += 1
+					if pagetype_name != "Sherry Dalziel":
+						continue
+					else:
+						count += 1
+						bubbles = rect_detect(image_path)
+						classifications = classifier(bubbles)
+						all_classifications += classifications
+						if (count % 20) == 
+				else:
+					print('file path error:', image_path)
+					break
+	outputdf = pd.read_csv('output.csv')
+	for i in range(len(all_classifications)):
+		outputdf['CNN'][i] = all_classifications[i]
+	outputdf.to_csv('output.csv', index=False)
+	print('total images scanned:', count)
 
 
 if __name__=="__main__":

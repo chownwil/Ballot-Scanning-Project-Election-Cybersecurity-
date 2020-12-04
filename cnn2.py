@@ -29,7 +29,6 @@ def get_f1(y_true, y_pred): #taken from old keras source code
 def get_X_and_Y():
 	ydf = pd.read_csv('y.csv')
 	Y = ydf['Label'].values
-	
 	for i in range(len(Y)):
 		if (Y[i] == 4) or (Y[i] == 5):
 			Y[i] = 1
@@ -67,6 +66,17 @@ def get_X_and_Y():
 
 	X_data = np.array(X)
 	Y_data = np.array(Y)
+	
+	breakpoint()
+	ptdf = pd.read_csv('pages.csv')
+	remove = []
+	for i in range(len(Y_data)):
+		if ptdf['PageType'][ptdf['JPGNumber'] == ydf['JPG'][i]].to_numpy()[0] == 'Sherry Dalziel':
+			remove.append(i)
+	breakpoint()
+	X_data = np.delete(X_data, remove, axis=0)
+	Y_data = np.delete(Y_data, remove, axis=0)
+	breakpoint()
 	return X_data, Y_data
 
 def get_model(metric, n_classes):
@@ -155,7 +165,9 @@ def main():
 	kick_count, accuracy = train_model(model, X_train, Y_train, X_test, Y_test, y_test, batch_size, epochs, confidence)
 	print('Kick Count: ', kick_count, 'out of ', len(y_test))
 	print('Accuracy: ', accuracy)
-	model.save('cnn2_model')
+
+	# Change this back
+	model.save('cnn2_model_sherry_dalziel')
 
 	# Remove after this line
 

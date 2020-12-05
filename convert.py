@@ -1,15 +1,10 @@
 import pandas as pd 
 import numpy as np 
 
-actualdf = pd.read_csv('Page Types/Sarie Toste (right)/votes.csv')
-actualarr = actualdf.to_numpy()
+actualdf = pd.read_csv('Page Types/Sarie Toste (Right)/votes.csv')
 outputdf = pd.read_csv('output_sarie_right.csv')
 
-print(actualarr.shape)
-print(outputdf.shape)
-
-for i in range(len(actualdf)):
-    for j in range(1, 8):
-        outputdf['Actual'][7 * i + j - 1] = actualarr[i][j]
-
-outputdf.to_csv('output_sarie_right2.csv', index=False)
+for i in range(len(outputdf)):
+    outputdf['Actual'][i] = actualdf[actualdf['JPGNumber'] == outputdf['JPGNumber'][i]]['Race ' + str(outputdf['RaceNumber'][i])+ ' Bubble ' + str(outputdf['BubbleNumber'][i])].to_numpy()[0]
+    
+outputdf.to_csv('output_sarie_right.csv', index=False)

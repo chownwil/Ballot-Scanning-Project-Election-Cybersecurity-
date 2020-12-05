@@ -147,7 +147,7 @@ def rect_detect(filepath):
 			bubbles_to_classify.append(bubble)
 
 	all_bubbles = np.stack(bubbles_to_classify)
-	all_bubbles = np.reshape(all_bubbles, (7, 28, 28, 1))
+	all_bubbles = np.reshape(all_bubbles, (-1, 28, 28, 1))
 	return all_bubbles
 
 

@@ -136,7 +136,7 @@ def rect_detect(filepath):
 			bubbles_to_classify.append(bubble)
 
 	all_bubbles = np.stack(bubbles_to_classify)
-	all_bubbles = np.reshape(all_bubbles, (7, 28, 28, 1))
+	all_bubbles = np.reshape(all_bubbles, (-1, 28, 28, 1))
 	return all_bubbles
 
 
@@ -145,7 +145,7 @@ def main():
 	# if os.path.exists(image_path):
 	# 	bubbles = rect_detect(image_path)
 	# 	classifier(bubbles)
-	
+
 	outside_folders = ['00', '01', '02', '03']
 	jpg_number = 1
 	count = 0

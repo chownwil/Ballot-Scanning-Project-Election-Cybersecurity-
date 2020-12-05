@@ -127,7 +127,7 @@ def rect_detect(filepath):
 	# jpgnum_pagetype_racenum_bubblenum
 
 	if bounds is None:
-		print("Failed to parse ballot: {}".format(file_path))
+		print("Failed to parse ballot: {}".format(filepath))
 		return np.stack([None])
 	
 	top_left = min(bounds, key=lambda x:sum(x[0]))[0]

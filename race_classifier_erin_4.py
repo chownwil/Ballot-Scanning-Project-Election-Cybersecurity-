@@ -128,7 +128,7 @@ def rect_detect(filepath):
 
 	if bounds is None:
 		print("Failed to parse ballot: {}".format(filepath))
-		return
+		return np.stack([None])
 	
 	top_left = min(bounds, key=lambda x:sum(x[0]))[0]
 
@@ -192,7 +192,10 @@ def main():
 					else:
 						count += 1
 						bubbles = rect_detect(image_path)
-						classifications = classifier(bubbles)
+						if bubbles.any() == None:
+							classifications = [2]*7
+						else:
+							classifications = classifier(bubbles)
 						all_classifications += classifications
 						if (count % 20) == 0:
 							print(count)

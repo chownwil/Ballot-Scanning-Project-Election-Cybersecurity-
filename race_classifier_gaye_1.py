@@ -189,10 +189,10 @@ def main():
 					print('file path error:', image_path)
 					break
 	print('Updating Output')
-	outputdf = pd.read_csv('output.csv')
+	outputdf = pd.read_csv('output_gaye.csv')
 	for i in range(len(all_classifications)):
 		outputdf['CNN'][i] = all_classifications[i]
-	outputdf.to_csv('output4.csv', index=False)
+	outputdf.to_csv('output_gaye.csv', index=False)
 	print('total images scanned:', count)
 
 

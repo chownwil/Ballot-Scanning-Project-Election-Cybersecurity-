@@ -194,10 +194,10 @@ def main():
 						count += 1
 						bubbles = rect_detect(image_path)
 						if bubbles.any() == None:
+							breakpoint()
 							classifications = [2]*7
 						else:
 							classifications = classifier(bubbles)
-						classifications = classifier(bubbles)
 						all_classifications += classifications
 						if (count % 20) == 0:
 							print(count)

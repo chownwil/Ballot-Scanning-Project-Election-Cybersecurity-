@@ -195,7 +195,6 @@ def main():
 							classifications = [2]*10
 						else:
 							classifications = classifier(bubbles)
-						classifications = classifier(bubbles)
 						all_classifications += classifications
 						if (count % 20) == 0:
 							print(count)

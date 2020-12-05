@@ -62,7 +62,7 @@ def classifier(X_data):
 	# if less than threshold, kick the ballot to a human
 	# write 2 to the csv for every bubble
 	if total_confidence < THRESHOLD:
-		return [2,2,2,2,2,2,2]
+		return [2]*len(X_data)
 
 	# if more than the threshold
 	# make sure all the marks are the same type
@@ -73,11 +73,11 @@ def classifier(X_data):
 		if label == 0:
 			continue
 		if label == 5 or label == 6:
-			return [2,2,2,2,2,2,2]
+			return [2]*len(X_data)
 		if prevLabel == None:
 			prevLabel = label
 		elif not prevLabel == label:
-			return [2,2,2,2,2,2,2]
+			return [2]*len(X_data)
 	
 	out = []
 

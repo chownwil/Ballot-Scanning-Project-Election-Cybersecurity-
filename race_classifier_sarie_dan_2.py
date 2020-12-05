@@ -190,6 +190,7 @@ def main():
 						continue
 					else:
 						count += 1
+						bubbles = rect_detect(image_path)
 						if bubbles.any() == None:
 							classifications = [2]*10
 						else:

@@ -62,7 +62,6 @@ mark_dictionary = {'0': 'no mark',
                    '8': 'other mark',
                    'open': 'Reopen Image',
                    'undo': 'Undo',
-                   'count': 'Print run info',
                    'bad': 'bad scan / wrong race'}
 
 page_layout_bubbles = {'Zachary B. Thoma and Dan Hauser': [7, 3],
@@ -109,105 +108,86 @@ choice_dictionary = {
     '18': 'John Ash',
     '19': 'Gaye Gerdts'}
 
+stop_marks = {2, 3, 4, 5, 6, 8}
+
 # """"
 doSleep = easygui.ynbox(msg='Wait to to open enterbox [y/n]? (Yes if using a Mac)')
-prompt1 = 'Enter a race number\n'
-prompt1 += '------------------------------------\n'
-for i in choice_dictionary:
-    prompt1 += i + ': ' + choice_dictionary[i] + '\n'
 
 prompt2 = '-------------------------------------\n'
 for i in mark_dictionary:
     prompt2 += i + ': ' + mark_dictionary[i] + '\n'
-keep_reading = 1
-while keep_reading:
-    choice = easygui.enterbox(msg=prompt1)
-    if choice == None:
-        keep_reading = 0
-        continue
-    if choice not in choice_dictionary:
-        continue
-    else:
-        pl = choice_dictionary[choice]
-        ballotsdf = pd.read_csv('Page Types/' + pl + '/labels.csv')
-        row = 0
-        maxrow = 0
-        labels = ''
-        while row < len(ballotsdf.index):
-            islabelled = 1
-            for i in range(len(page_layout_bubbles[pl])):
-                if ballotsdf['Race ' + str(i) + ' Bubble 0'][row] == -1:
+
+for pli in choice_dictionary:
+    pl = choice_dictionary[pli]
+    ballotsdf = pd.read_csv('Page Types/' + pl + '/votes.csv')
+    row = 0
+    prev = []
+    forward = []
+    labels = ''
+    while row < len(ballotsdf.index):
+        islabelled = 1
+        for i in range(len(page_layout_bubbles[pl])):
+            for j in range(page_layout_bubbles[pl][i]):
+                if ballotsdf['Race ' + str(i) + ' Bubble ' + str(j)][row] in stop_marks:
                     islabelled = 0
                     break
-            if islabelled == 0 or row < maxrow:
-
-                nm = get_image_name(ballotsdf['JPGNumber'][row])
-                im = Image.open(nm)
-                im.show()
-                
-                if doSleep:
-                    time.sleep(1)
-                
-                for race_no in range(len(page_layout_bubbles[pl])):
-                    bad_input = 1
-                    while bad_input == 1:
-                        bad_input = 0
-                        default = ''
-                        if islabelled == 1:
-                            for i in range(0, page_layout_bubbles[pl][race_no]):
-                                default += str(ballotsdf['Race ' + str(race_no) +
-                                  ' Bubble ' + str(i)][row])
-                        labels = easygui.enterbox(msg='Enter Ballot ' + str(ballotsdf['JPGNumber'][row]) + ' Race ' + str(
-                            race_no) + ' labels:\n' + prompt2, default=default)
-                        if labels == None:
-                            break
-                        elif labels == 'undo':
-                            row -= 2
-                            break
-                        elif labels == 'open':
-                            bad_input = 1
-                            im.show()
-                        elif labels == 'count':
-                            bad_input = 1
-                            msg = 'Ballots labeled: ' + str(row) + '\n'
-                            bubbles = 0
-                            for i in range(len(page_layout_bubbles[pl])):
-                                for j in range(page_layout_bubbles[pl][i]):
-                                    bubbles += 1
-                            msg += 'Bubbles labeled: ' + str(row * bubbles) + '\n'
-                            ballots = 1
-                            for i in range(row, len(ballotsdf.index)):
-                                if ballotsdf['Race 0 Bubble 0'][i] == -1:
-                                    ballots += 1
-                            msg += 'Ballots to go: ' + str(ballots) + '\n'
-                            msg += 'Bubbles to go: ' + str(ballots * bubbles) + '\n'
-                            easygui.msgbox(msg=msg)
-                        elif labels == 'bad':
-                            for race_no2 in range(0,len(page_layout_bubbles[pl])):
-                                for bubble in range(0,page_layout_bubbles[pl][race_no2]):
-                                    ballotsdf['Race ' + str(race_no2) + ' Bubble ' + str(bubble)][row] = '7'
-                        elif len(labels) != page_layout_bubbles[pl][race_no]:
-                            bad_input = 1
+            if islabelled == 0:
+                break
+        if (islabelled == 0) or (row in forward):
+            nm = get_image_name(ballotsdf['JPGNumber'][row])
+            im = Image.open(nm)
+            im.show()
+            
+            if doSleep:
+                time.sleep(1)
+            
+            for race_no in range(len(page_layout_bubbles[pl])):
+                bad_input = 1
+                while bad_input == 1:
+                    bad_input = 0
+                    default = ''
+                    for i in range(page_layout_bubbles[pl][race_no]):
+                        if ballotsdf['Race ' + str(race_no) + ' Bubble ' + str(i)][row] in stop_marks:
+                            default += '1'
                         else:
-                            for ch in labels:
-                                if ch not in mark_dictionary or int(ch) >= 9:
-                                    bad_input = 1
-                    if labels == None or labels == 'undo' or labels == 'bad':
+                            default += str(ballotsdf['Race ' + str(race_no) + ' Bubble ' + str(i)][row])
+                    labels = easygui.enterbox(msg='Enter Ballot ' + str(ballotsdf['JPGNumber'][row]) + ' Race ' + str(
+                        race_no) + ' labels:\n' + prompt2, default=default)
+                    if labels == None:
                         break
-                    for i in range(0, page_layout_bubbles[pl][race_no]):
-                        ballotsdf['Race ' + str(race_no) +
-                                  ' Bubble ' + str(i)][row] = labels[i]
-                    labels = ''
-                im.close()
-                if labels == None:
+                    elif labels == 'undo':
+                        forward.append(row)
+                        row = prev.pop()
+                        break
+                    elif labels == 'open':
+                        bad_input = 1
+                        im.show()
+                    elif labels == 'bad':
+                        for race_no2 in range(0,len(page_layout_bubbles[pl])):
+                            for bubble in range(0,page_layout_bubbles[pl][race_no2]):
+                                ballotsdf['Race ' + str(race_no2) + ' Bubble ' + str(bubble)][row] = '7'
+                    elif len(labels) != page_layout_bubbles[pl][race_no]:
+                        bad_input = 1
+                    else:
+                        for ch in labels:
+                            if (ch != '0') and (ch != '1') and ('ch' != '7'):
+                                bad_input = 1
+                if labels == None or labels == 'undo' or labels == 'bad':
                     break
-            row += 1
-            maxrow = max(maxrow,row)
-            if row == (len(ballotsdf.index)):
-                easygui.msgbox(msg='Finished labelling page type: ' + pl)
-        ballotsdf.to_csv('Page Types/' + pl + '/labels.csv', index=False)
-        ballotsdf.to_csv('Page Types/' + pl + '/votes.csv', index=False)
-        os.system('python3 summary.py')
+                for i in range(0, page_layout_bubbles[pl][race_no]):
+                    ballotsdf['Race ' + str(race_no) +
+                            ' Bubble ' + str(i)][row] = labels[i]
+                labels = ''
+            im.close()
+            if labels == None:
+                break
+            if labels == 'undo':
+                continue
+            prev.append(row)
+        row += 1
+        if row == (len(ballotsdf.index)):
+            easygui.msgbox(msg='Finished labelling page type: ' + pl)
+    ballotsdf.to_csv('Page Types/' + pl + '/votes.csv', index=False)
 """
 import os
 

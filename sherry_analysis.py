@@ -1,7 +1,7 @@
 import pandas as pd 
 import numpy as np
 
-df = pd.read_csv('output.csv')
+df = pd.read_csv('output_sherry.csv')
 
 baseline_correct = 0
 cnn_correct = 0
@@ -15,6 +15,8 @@ for i in range(len(df)):
     elif df['Baseline'][i] == 2:
         baseline_correct += 1
         baseline_kick += 1
+    else: 
+        print(df['JPGNumber'][i])
     if df['Actual'][i] == df['CNN'][i]:
         cnn_correct += 1
     elif df['CNN'][i] == 2:

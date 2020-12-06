@@ -26,8 +26,6 @@ def get_image_name(ballot_number):
 
 filename = easygui.enterbox(msg='Enter Filename:')
 
-df = pd.read_csv('output_erin.csv')
-
 baseline_correct = 0
 cnn_correct = 0
 
@@ -47,13 +45,14 @@ for i in range(len(df)):
         baseline_correct += 1
         baseline_kick += 1
     else:
-        bad.add(int(i / 7))
-
+        bad.add(df['JPGNumber'][i])
     if df['Actual'][i] == df['CNN'][i]:
         cnn_correct += 1
     elif df['CNN'][i] == 2:
         cnn_correct += 1
         cnn_kick += 1
+    else:
+        bad.add(df['JPGNumber'][i])
 
 msg = 'Baseline Accuracy:' + str(baseline_correct) + ' / ' + str(good_data) + '\n'
 msg += 'Baseline Kick: ' +  str(baseline_kick) + '\n'
@@ -62,16 +61,19 @@ msg += 'CNN Kick: ' + str(cnn_kick)
 easygui.msgbox(msg)
 
 for i in bad:
-    al = ''
-    bl = ''
-    cl = ''
-    for j in range(7):
-        al += str(df['Actual'][i * 7 + j])
-        bl += str(df['Baseline'][i * 7 + j])
-        cl += (df['CNN'][i * 7 + j])
-    nm = get_image_name(df['JPGNumber'][i])
-    im = Image.open(nm)
+    im = Image.open(get_image_name(i))
     im.show()
-    msg2 = nm + '\n' + al + '\n' + bl + '\n' + cl
-    if easygui.ynbox(msg2) == False:
+    msg = 'Actual: '
+    for j in df[df['JPGNumber'] == i]['Actual'].to_numpy().flatten():
+        msg += str(j)
+    msg += '\n'
+    msg += 'Baseline: '
+    for j in df[df['JPGNumber'] == i]['Baseline'].to_numpy().flatten():
+        msg += str(j)
+    msg += '\n'
+    msg += 'CNN: '
+    for j in df[df['JPGNumber'] == i]['CNN'].to_numpy().flatten():
+        msg += str(j)
+    msg += '\n'
+    if easygui.ynbox(msg) == False:
         break

@@ -24,6 +24,7 @@ def get_image_name(ballot_number):
     image_nm += str(ballot_number) + '.jpg'
     return image_nm
 
+filename = easygui.enterbox(msg='Enter Filename:')
 
 df = pd.read_csv('output_erin.csv')
 

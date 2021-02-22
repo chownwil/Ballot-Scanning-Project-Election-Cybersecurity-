@@ -1,29 +1,44 @@
 from PIL import Image
-#run 'pip install pytesseract' in terminal if you haven't installed pytesseract
 import pytesseract
-
 import cv2
 import csv
-from tqdm.contrib.discord import tqdm, trange
+from tqdm import trange
+from tqdm.contrib.discord import tdrange
+import sys
+import json
 
 MAX_BATCH_NUM = 242
 
 race_id = 0
-
 name_id = 3
-
 races = {}
 names = {
     'blankcontest': 0,
     'no': 1,
     'yes': 2
 }
-
-bot_token = 'ODEzMjU0NDQ0OTgwMzcxNDg3.YDMoOQ.gQQN-YoSY58Iyy7GZI3OzCbriXM'
-bot_channel = '765292807740850180'
-
 image_name = ''
-for batch_num in tqdm(range(MAX_BATCH_NUM), token=bot_token, channel_id=bot_channel):
+
+sys.argv
+args = {}
+
+discord_progress = 0
+if (len(sys.argv) == 2):
+    if (sys.argv[1] == 'discord'):
+        discord_progress = 1
+        with open('./config.json', 'r') as cjson:
+            config = json.load(cjson)
+        args['token'] = config["token"]
+        args['channel_id'] = '765292807740850180'
+
+def run_tqdm(discord_progress):
+    if discord_progress:
+        return tdrange(MAX_BATCH_NUM, **args)
+    else:
+        return trange(MAX_BATCH_NUM)
+
+#extract results
+for batch_num in run_tqdm(discord_progress):
     image_name = 'June ICC ABS/Batch' + str(batch_num + 1).zfill(3)
     image_name += '/Images/00760_00' + str(batch_num + 1).zfill(3) + '_'
     image_num = 1

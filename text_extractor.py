@@ -4,14 +4,13 @@ import pytesseract
 
 import cv2
 import csv
+from tqdm import tqdm 
 
 MAX_BATCH_NUM = 242
 
 race_id = 0
 
 name_id = 2
-
-count = 0
 
 races = {}
 names = {
@@ -21,7 +20,7 @@ names = {
 }
 
 image_name = ''
-for batch_num in range(MAX_BATCH_NUM):
+for batch_num in tqdm(range(MAX_BATCH_NUM)):
     image_name = 'June ICC ABS/Batch' + str(batch_num + 1).zfill(3)
     image_name += '/Images/00760_00' + str(batch_num + 1).zfill(3) + '_'
     image_num = 1
@@ -64,9 +63,6 @@ for batch_num in range(MAX_BATCH_NUM):
             image_num += 1
         except FileNotFoundError:
             openIt  = 0
-        count += 1
-        if (count % 10 == 0):
-            print(count)
 w = open("races.csv", "w")
 for key, val in races.items():
     w.write(str(key) + ', ' + str(val) + '\n')

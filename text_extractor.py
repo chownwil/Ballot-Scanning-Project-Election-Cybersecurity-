@@ -4,13 +4,13 @@ import pytesseract
 
 import cv2
 import csv
-from tqdm import tqdm 
+from tqdm.contrib.discord import tqdm, trange
 
 MAX_BATCH_NUM = 242
 
 race_id = 0
 
-name_id = 2
+name_id = 3
 
 races = {}
 names = {
@@ -19,8 +19,11 @@ names = {
     'yes': 2
 }
 
+bot_token = 'ODEzMjU0NDQ0OTgwMzcxNDg3.YDMoOQ.gQQN-YoSY58Iyy7GZI3OzCbriXM'
+bot_channel = '765292807740850180'
+
 image_name = ''
-for batch_num in tqdm(range(MAX_BATCH_NUM)):
+for batch_num in tqdm(range(MAX_BATCH_NUM), token=bot_token, channel_id=bot_channel):
     image_name = 'June ICC ABS/Batch' + str(batch_num + 1).zfill(3)
     image_name += '/Images/00760_00' + str(batch_num + 1).zfill(3) + '_'
     image_num = 1

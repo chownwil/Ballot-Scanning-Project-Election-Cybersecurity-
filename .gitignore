@@ -2,6 +2,8 @@
 shapes*.jpg
 .vscode
 Pueblo_text/**
+Pueblo_data/**
+Pueblo/**
 
 #bot config
 config.json

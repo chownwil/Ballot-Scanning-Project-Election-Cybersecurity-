@@ -1,6 +1,7 @@
 .DS_Store
 shapes*.jpg
 .vscode
+Pueblo_text/**
 
 #bot config
 config.json

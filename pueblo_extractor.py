@@ -1,0 +1,146 @@
+import os
+import csv
+from tqdm import tqdm
+
+"""
+Take an img and get the text chunks, as well as 
+determine whether or not a ballot was adjudicated.
+Return chunks and a bool for adjudicated
+"""
+def adjudicated(text):
+    adjud = False
+    chunks = text.split('\n')
+    #if text was adjudicated, then one of the chunks will contain an element in bad:
+    bad = ['adjudicated', 'over-vote', 'notcounted', 'overvote']
+    for chunk in chunks:
+        chunk = chunk.lower().replace(' ', '').replace(',', '')
+        for i in bad:
+            if i in chunk:
+                adjud = True
+    
+    return chunks, adjud
+
+#Function for extracting results from adjudicated ballots
+def extract_adjudicated(chunks, races, names):
+    data= {}
+    first_race = -1
+    for i, chunk in enumerate(chunks):
+        chunk = chunk.lower().replace(' ', '')
+        if ('ballotid:' in chunk):
+            loc = chunk.find('ballotid:') + 9
+            data['BallotID'] = int(chunk[loc:])
+            first_race = i+1
+            break
+    race_chunks = chunks[first_race:(len(chunks) - 1)]
+    for chunk in race_chunks:
+        line = chunk.lower().replace(' ', '').replace(',', '')
+        if line == 'over-vote':
+            isOverVote = 1
+        elif line in races:
+            race = line
+            isOverVote = 0
+        elif line in names:
+            if races == 'Bad Data':
+                print('Parsing error for line: ', line)
+            if isOverVote and (races[race] in data):
+                data[races[race]] *= 1000
+                data[races[race]] += names[line]
+            else: 
+                
+                data[races[race]] = names[line]
+        elif line.split('(notcounted)')[0] in names:
+            line = line.split('(notcounted)')[0]
+            if isOverVote and (races[race] in data):
+                data[races[race]] *= 1000
+                data[races[race]] += -1 * names[line]
+            else: 
+                data[races[race]] = -1 * names[line]
+        elif 'adjudicated' in line:
+            break
+        else:
+            print('Parsing failed for line: ', line)
+            val = input('Enter user input [race/name/adj_name/other]: ')
+            if val == 'race':
+                races[line] = len(races)
+                decrement += 1
+            elif val == 'name':
+                names[line] = len(names)
+                decrement += 1
+            elif val == 'adj_name':
+                name = input('Correct name: ')
+                names[name] = len(names)
+            else:
+                print('Edge case that was not considered')
+                print('Line: ', line)
+    return data
+
+#Function for extracting results from un-adjudicated ballots
+def extract_normal(chunks, races, names):
+    data = {}
+    first_race = -1
+    for i, chunk in enumerate(chunks):
+        chunk = chunk.lower().replace(' ', '')
+        if ('ballotid:' in chunk):
+            loc = chunk.find('ballotid:') + 9
+            data['BallotID'] = int(chunk[loc:])
+            first_race = i+1
+            break
+    
+    chunks = chunks[first_race:(len(chunks) - 1)]
+    for i in range(int(len(chunks) / 2)):
+        race = chunks[i * 2]
+        race = race.lower().replace(' ', '').replace(',', '')
+        name = chunks[i * 2 + 1]
+        name = name.lower().replace(' ', '').replace(',', '')
+        if race not in races:
+            races[race] = len(races)
+        if name not in names:
+            names[name] = len(names)
+        data[races[race]] = names[name]
+    return data
+
+#main function
+def main():
+    image_texts = os.listdir('Pueblo_text')
+    with open('pueblo_races.csv', mode='r') as inp:
+        reader = csv.reader(inp)
+        races = {rows[0]:int(rows[1]) for rows in reader}
+
+    with open('pueblo_names.csv', mode='r') as inp:
+        reader = csv.reader(inp)
+        names = {rows[0]:int(rows[1]) for rows in reader}
+
+    
+    for text_file in tqdm(image_texts):
+        batch = text_file[0:8]
+        with open('Pueblo_text/' + text_file, 'r') as file:
+            text = file.read()
+        chunks, adjud = adjudicated(text)
+
+        data = {}
+        if adjud:
+            print('>>>>>>>>ADJUDICATED BALLOT<<<<<<<<<<<<')
+            data = extract_adjudicated(chunks, races, names)
+        else:
+            data = extract_normal(chunks, races, names)
+        
+        if not os.path.exists('Pueblo_data/' + batch):
+            os.makedirs('Pueblo_data/' + batch)
+        f = open('Pueblo_data/' + batch + '/' + text_file[8:-4] + '_results.csv', 'w')
+        for i in data.keys():
+            f.write(str(i) + ', ' + str(data[i]) + '\n')
+        f.close()
+
+    w = open("pueblo_races.csv", "w")
+    for key, val in races.items():
+        w.write(str(key) + ', ' + str(val) + '\n')
+    w.close()
+
+    w = open("pueblo_names.csv", "w")
+    for key, val in names.items():
+        w.write(str(key) + ', ' + str(val) + '\n')
+    w.close()
+
+
+if __name__ == '__main__':
+    main()

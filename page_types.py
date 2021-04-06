@@ -1,10 +1,51 @@
 """
 If a ballot  has all the same races on a page as another ballot, the they have the same page type
-Usage: python3 page_types.py <directory name> <number of Batches in directory>
+Usage: python3 page_types.py <'directory name'> <number of Batches in directory>
 Example : python3 page_types.py 'June ICC ABS/' 242
 """
 import csv
 import sys
+import os
+
+def get_pueblo_pages(directory = 'Pueblo_data/'):
+    pageTypes = []
+    batches = os.listdir(directory)
+    ptOut = open('pueblo_page_types.csv', mode = 'w')
+    pt_writer = csv.writer(ptOut)
+    keyOut = open('pueblo_page_type_keys.csv', mode = 'w')
+    for batch in batches:
+        if batch[0:5] != 'Batch':
+            print(batch)
+            continue
+        results = os.listdir(directory + batch + '/')
+        for result in results:
+            if 'results.csv' not in result:
+                print('Bad result file: ', result)
+                continue
+
+            try:
+                with open(directory + batch + '/' + result, mode='r') as inp:
+                    data = csv.reader(inp)
+                    races = [row[0] for row in data]
+                    races = races[1:]
+                index = -1
+                try:
+                    index = pageTypes.index(races)
+                except ValueError:
+                    index = len(pageTypes)
+                    pageTypes.append(races)
+                    print(races)
+                    for i in races:
+                        keyOut.write(str(i) + ', ')
+                    keyOut.write('\n')
+                pt_writer.writerow([result, index])
+            except FileNotFoundError:
+                print('File not found: ', result)
+    keyOut.close()
+    ptOut.close()
+
+            #pt_writer.writerow([result, index]), where index is the row_num from the keys csv
+
 
 def get_page_types(directory, maxBatchNo):
     maxBatchNo = int(maxBatchNo)
@@ -42,8 +83,10 @@ def get_page_types(directory, maxBatchNo):
 
 def main():
     directory = sys.argv[1]
-    maxBatchNo = sys.argv[2]
-    get_page_types(directory, maxBatchNo)
+    print(directory)
+    #maxBatchNo = sys.argv[2]
+    #get_page_types(directory, maxBatchNo)
+    get_pueblo_pages(directory)
 
 if __name__ == "__main__":
     main()

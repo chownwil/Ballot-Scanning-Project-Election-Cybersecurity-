@@ -2,11 +2,7 @@ import os
 import csv
 from tqdm import tqdm
 
-"""
-Take an img and get the text chunks, as well as 
-determine whether or not a ballot was adjudicated.
-Return chunks and a bool for adjudicated
-"""
+#Return chunks and a bool for adjudicated given input text
 def adjudicated(text):
     adjud = False
     chunks = text.split('\n')
@@ -32,8 +28,10 @@ def extract_adjudicated(chunks, races, names):
             first_race = i+1
             break
     race_chunks = chunks[first_race:(len(chunks) - 1)]
-    for chunk in race_chunks:
-        line = chunk.lower().replace(' ', '').replace(',', '')
+    isOverVote = 0
+    decrement = 0
+    for i in range(len(race_chunks)):
+        line = race_chunks[i - decrement].lower().replace(' ', '').replace(',', '')
         if line == 'over-vote':
             isOverVote = 1
         elif line in races:
@@ -46,19 +44,23 @@ def extract_adjudicated(chunks, races, names):
                 data[races[race]] *= 1000
                 data[races[race]] += names[line]
             else: 
-                
+                #normal, non-overvote race
                 data[races[race]] = names[line]
         elif line.split('(notcounted)')[0] in names:
             line = line.split('(notcounted)')[0]
             if isOverVote and (races[race] in data):
+                #not counted and overvote
                 data[races[race]] *= 1000
                 data[races[race]] += -1 * names[line]
             else: 
+                #if first of multi-vote lines
                 data[races[race]] = -1 * names[line]
         elif 'adjudicated' in line:
             break
         else:
-            print('Parsing failed for line: ', line)
+            
+            print('Parsing failed for line: ', line, ' in chunks:')
+            print(chunks)
             val = input('Enter user input [race/name/adj_name/other]: ')
             if val == 'race':
                 races[line] = len(races)
@@ -72,6 +74,7 @@ def extract_adjudicated(chunks, races, names):
             else:
                 print('Edge case that was not considered')
                 print('Line: ', line)
+            
     return data
 
 #Function for extracting results from un-adjudicated ballots
@@ -113,6 +116,8 @@ def main():
     
     for text_file in tqdm(image_texts):
         batch = text_file[0:8]
+        #if batch != 'Batch047':
+         #   continue
         with open('Pueblo_text/' + text_file, 'r') as file:
             text = file.read()
         chunks, adjud = adjudicated(text)

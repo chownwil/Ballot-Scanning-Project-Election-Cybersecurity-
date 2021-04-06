@@ -1,7 +1,16 @@
 """
 If a ballot  has all the same races on a page as another ballot, the they have the same page type
-Usage: python3 page_types.py <'directory name'> <number of Batches in directory>
-Example : python3 page_types.py 'June ICC ABS/' 242
+Usage: python3 page_types.py <'directory name'>
+Example : python3 page_types.py 'June ICC ABS/'
+
+------------------------------------------
+PAGE TYPES AND PAGE TYPE KEYS EXPLANATION:
+------------------------------------------
+The csv file pueblo_page_type_keys.csv contains 16 comma-separated rows that list the race layout of each page type.
+    A race layout is determined by the order in which races appear on a results file; a list of all races can be found in 
+    races.csv
+The csv file pueblo_page_types.csv contains 2 columns, one with a results file name, and the other
+    with a numerical index corresponding to the row number (INDEXING FROM ZERO) in pueblo_page_type_keys.csv
 """
 import csv
 import sys

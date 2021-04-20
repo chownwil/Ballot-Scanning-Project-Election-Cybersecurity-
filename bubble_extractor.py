@@ -2,6 +2,9 @@ import cv2
 import matplotlib.pyplot as plt
 import math
 from scipy import ndimage
+import imageio
+from PIL import Image
+import numpy as np
 
 def goodPointBottomLeftBlock(cont):
     epsilon = 0.1*cv2.arcLength(cont,True)
@@ -98,22 +101,16 @@ def centerBottomPointFinder(cont):
     return(cX, bottom_most_point)
 
 
-# def line_intersect(Ax1, Ay1, Ax2, Ay2, Bx1, By1, Bx2, By2):
 def intersection(top, bottom, left, right):
-    # d = (By2 - By1) * (Ax2 - Ax1) - (Bx2 - Bx1) * (Ay2 - Ay1)
     d = (top[1] - bottom[1]) * (left[0] - right[0]) - (top[0] - bottom[0]) * (left[1] - right[1])
     if d:
-        # uA = ((Bx2 - Bx1) * (Ay1 - By1) - (By2 - By1) * (Ax1 - Bx1)) / d
         uA = ((top[0] - bottom[0]) * (right[1] - bottom[1]) - (top[1] - bottom[1]) * (right[0] - bottom[0])) / d
-        # uB = ((Ax2 - Ax1) * (Ay1 - By1) - (Ay2 - Ay1) * (Ax1 - Bx1)) / d
         uB = ((left[0] - right[0]) * (right[1] - bottom[1]) - (left[1] - right[1]) * (right[0] - bottom[0])) / d
     else:
         return
     if not(0 <= uA <= 1 and 0 <= uB <= 1):
         return
-    # x = Ax1 + uA * (Ax2 - Ax1)
     x = right[0] + uA * (left[0] - right[0])
-    # y = Ay1 + uA * (Ay2 - Ay1)
     y = right[1] + uA * (left[1] - right[1])
  
     return math.floor(x), math.floor(y)
@@ -125,17 +122,22 @@ def centerXCoord(cont):
 def centerYCoord(cont):
     return centerFinder(cont)[1]
 
-def countContours(filename):
-    img = cv2.imread(filename)
+def baseline(img):
+    img = Image.fromarray(img)
+    img_gray = img.convert("1")
+    pil_bw = np.array(img_gray)
+    count = 0
+    for r in pil_bw:
+        for c in r:
+            if c == False:
+                count +=1
+    return (count/(pil_bw.shape[0]*pil_bw.shape[1])) < 0.07
 
-    # img = ndimage.rotate(img, 5)
+# 5892
 
-    # plt.imsave("output_lines.jpg",img)
 
-    # return
-
-    imgray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    ret, thresh = cv2.threshold(imgray, 127, 255, 0)
+def extract_bubbles(img, image_path, page_num, bubbles_races, races, logging):
+    ret, thresh = cv2.threshold(img, 127, 255, 0)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     bottom_left_block = [cont for cont in contours if cv2.contourArea(cont) > 7500 and cv2.contourArea(cont) < 8500 and goodPointBottomLeftBlock(cont)]
@@ -156,9 +158,17 @@ def countContours(filename):
 
     len(lefts), len(rights), len(tops), len(bottoms)
 
-    if len(rights) != 47 or len(tops) != 32 or len(bottoms) != 33 or len(lefts) != 47:
-        breakpoint()
-        print("uh oh")
+    if len(rights) != 63 or len(tops) != 32 or len(bottoms) != 33 or len(lefts) != 63:
+        for i in range(min(len(lefts), len(rights))):
+            img = cv2.line(img, centerTopPointFinder(lefts[i]), centerTopPointFinder(rights[i]), (0,0,0), 1)
+            img = cv2.line(img, centerBottomPointFinder(lefts[i]), centerBottomPointFinder(rights[i]), (0,0,0), 1)
+
+        for i in range(min(len(tops), len(bottoms))):
+            img = cv2.line(img, centerRightPointFinder(tops[i]), centerRightPointFinder(bottoms[i]), (0,0,0), 1)
+            img = cv2.line(img, centerLeftPointFinder(tops[i]), centerLeftPointFinder(bottoms[i]), (0,0,0), 1)
+        imageio.imwrite("bad_ballots/output_lines_{}.jpg".format(image_path),img)
+        logging.warning("uh oh could not identify timing marks for image {}".format(image_path))
+        return
 
     """
     Draws Lines
@@ -171,12 +181,25 @@ def countContours(filename):
     #     img = cv2.line(img, centerRightPointFinder(tops[i]), centerRightPointFinder(bottoms[i]), (255,0,0), 1)
     #     # img = cv2.line(img, centerLeftPointFinder(tops[i]), centerLeftPointFinder(bottoms[i]), (255,0,0), 1)
 
-    for i in range(min(len(lefts), len(rights))):
-        for j in range(min(len(tops), len(bottoms))):
-            if j%2 == 1:
-                continue
+    # for i in range(min(len(lefts), len(rights))):
+    #     for j in range(min(len(tops), len(bottoms))):
+    #         if j%2 == 1:
+    #             continue
+    #         line_intersection = (intersection(centerRightPointFinder(tops[j]), centerRightPointFinder(bottoms[j]), centerFinder(lefts[i]), centerFinder(rights[i])))
+    #         img = cv2.rectangle(img, (line_intersection[0]-8, line_intersection[1]-25), (line_intersection[0]+42, line_intersection[1]+25) , color=(0, 255, 0), thickness=1)
+
+    race = 0
+    for bubbles in bubbles_races:
+        bubble = 0
+        for michael in bubbles:
+            j, i = michael
             line_intersection = (intersection(centerRightPointFinder(tops[j]), centerRightPointFinder(bottoms[j]), centerFinder(lefts[i]), centerFinder(rights[i])))
             img = cv2.rectangle(img, (line_intersection[0]-8, line_intersection[1]-25), (line_intersection[0]+42, line_intersection[1]+25) , color=(0, 255, 0), thickness=1)
+            bubble_extracted = img[line_intersection[1]-25:line_intersection[1]+25,line_intersection[0]-8:line_intersection[0]+42]
+            blank = 0 if baseline(bubble_extracted) else 1
+            imageio.imwrite('bubbles/{}_{}_{}_{}_{}.jpg'.format(image_path,str(page_num),str(races[race]),str(bubble),str(blank)), bubble_extracted)
+            bubble += 1
+        race += 1
 
     plt.imsave("output_lines.jpg",img)
 
@@ -206,7 +229,7 @@ def countContours(filename):
     # return (len(rights), len(tops))
 
 
-countContours('June ICC ABS/Batch001/Images/00760_00001_000012.tif')
+# extract_bubbles(cv2.imread('June ICC ABS/Batch001/Images/00760_00001_000012.tif'), 0, 0,  [ [(0,18), (0,19), (0,20), (0,21), (0,22), (0,23), (0,24), (0,25), (0,26), (0,27), (0,28), (0,29)], [(0,32), (0,33), (0,34), (0,35), (0,36), (0,37), (0,38)], [(0,42)], [(11,18), (11,19)], [(11,23)], [(11,27)], [(11,31)], [(11,34)], [(11,38)], [(11,44), (11,45)], [(22,18), (22,19)], [(22,23), (22,24)], [(22,28), (22,29)], [(22,33), (22,34)], [(22,38), (22,39)] ])
 
 
 # def findBubbles(filename, bubble_timing)

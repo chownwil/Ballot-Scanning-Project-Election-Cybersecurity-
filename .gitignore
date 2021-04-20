@@ -2,7 +2,7 @@
 shapes*.jpg
 .vscode
 Pueblo/**
-**/__pycache__/
+__pycache__/
 .idea/
 
 #bot config

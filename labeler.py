@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import easygui
 import time
+import shutil
 
 mark_dictionary = {'0': 'no mark',
                    '1': 'properly bubbled',
@@ -23,6 +24,17 @@ mark_dictionary = {'0': 'no mark',
 prompt = '---Menu---\n'
 for i in mark_dictionary:
     prompt += i + ': ' + mark_dictionary[i] + '\n'
+
+def get_label_folder_path(directory):
+    root = 'Pueblo_labels/'
+    project = ('ICC 101/' if (directory[12] == '1') else 'ICC 201/')
+    if not os.path.isdir(root + project):
+        os.mkdir(root + project)
+    batch = directory[16:21]
+    if not os.path.isdir(root + project + batch):
+        os.mkdir(root + project + batch)
+    labels = '/labels.csv'
+    return root + project + batch + labels
 
 def makeDF(directory):
     with open(directory + '/labels.csv', 'w') as csvfile:
@@ -59,9 +71,11 @@ def directoryIterator(directory):
                     easygui.msgbox(msg=string)
                 elif data == 's':
                     labelsdf.to_csv(directory + '/labels.csv', index=False)
+                    shutil.copy(directory + '/labels.csv', get_label_folder_path(directory))
                     history = []
                 elif data == 'q':
                     labelsdf.to_csv(directory + '/labels.csv', index=False)
+                    shutil.copy(directory + '/labels.csv', get_label_folder_path(directory))
                     return
                 else:
                     labelsdf['result'].at[row] = data
@@ -71,6 +85,7 @@ def directoryIterator(directory):
             row += 1
     if easygui.ynbox(msg='Save?'):
         labelsdf.to_csv(directory + '/labels.csv', index=False)
+        shutil.copy(directory + '/labels.csv', get_label_folder_path(directory))
 directory = sys.argv[1]
 if not os.path.exists(directory + '/labels.csv'):
     makeDF(directory)

@@ -64,6 +64,10 @@ def directoryIterator(directory):
                     if len(history) != 0:
                         row = history.pop()
                         labelsdf['result'].at[row] = -1
+                elif data == '1u':
+                    if len(history) != 0:
+                        row = history.pop()
+                        labelsdf['result'].at[row] = -1
                 elif data == 'p':
                     string = 'Bubbles Labeled: ' +  str(len(history)) + '\n'
                     for i in history:

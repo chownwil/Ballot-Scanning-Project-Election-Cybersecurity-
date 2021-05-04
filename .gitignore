@@ -2,6 +2,9 @@
 shapes*.jpg
 .vscode
 Pueblo/**
+bubbles_2/**
+June ICC ABS data/**
+June ICC ABS text/**
 __pycache__/
 .idea/
 

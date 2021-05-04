@@ -16,24 +16,26 @@ import csv
 import sys
 import os
 
-def get_pueblo_pages(directory = 'Pueblo_data/'):
+def get_pages(directory):
+    loc = directory.find('data') - 1
+    prefix = directory[0:loc]
     pageTypes = []
     batches = os.listdir(directory)
-    ptOut = open('pueblo_page_types.csv', mode = 'w')
+    ptOut = open(prefix + '_page_types.csv', mode = 'w')
     pt_writer = csv.writer(ptOut)
-    keyOut = open('pueblo_page_type_keys.csv', mode = 'w')
+    keyOut = open(prefix + '_page_type_keys.csv', mode = 'w')
     for batch in batches:
         if batch[0:5] != 'Batch':
             print(batch)
             continue
-        results = os.listdir(directory + batch + '/')
+        results = os.listdir(directory + '/' + batch + '/')
         for result in results:
             if 'results.csv' not in result:
                 print('Bad result file: ', result)
                 continue
 
             try:
-                with open(directory + batch + '/' + result, mode='r') as inp:
+                with open(directory + '/' + batch + '/' + result, mode='r') as inp:
                     data = csv.reader(inp)
                     races = [row[0] for row in data]
                     races = races[1:]
@@ -55,7 +57,7 @@ def get_pueblo_pages(directory = 'Pueblo_data/'):
 
             #pt_writer.writerow([result, index]), where index is the row_num from the keys csv
 
-
+#old version
 def get_page_types(directory, maxBatchNo):
     maxBatchNo = int(maxBatchNo)
     pageTypes = []
@@ -93,9 +95,7 @@ def get_page_types(directory, maxBatchNo):
 def main():
     directory = sys.argv[1]
     print(directory)
-    #maxBatchNo = sys.argv[2]
-    #get_page_types(directory, maxBatchNo)
-    get_pueblo_pages(directory)
+    get_pages(directory)
 
 if __name__ == "__main__":
     main()

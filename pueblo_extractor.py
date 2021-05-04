@@ -104,12 +104,19 @@ def extract_normal(chunks, races, names):
 
 #main function
 def main():
-    image_texts = os.listdir('Pueblo_text')
-    with open('pueblo_races.csv', mode='r') as inp:
+
+    #change directory name and csv names depending on which dataset
+    races_csv = 'June ICC ABS_races.csv' #pueblo_races.csv
+    names_csv = 'June ICC ABS_names.csv' #pueblo_names.csv
+    text_dir = 'June ICC ABS text' #Pueblo_text
+    data_dir = 'June ICC ABS data' #Pueblo_data
+
+    image_texts = os.listdir(text_dir)
+    with open(races_csv, mode='r') as inp:
         reader = csv.reader(inp)
         races = {rows[0]:int(rows[1]) for rows in reader}
 
-    with open('pueblo_names.csv', mode='r') as inp:
+    with open(names_csv, mode='r') as inp:
         reader = csv.reader(inp)
         names = {rows[0]:int(rows[1]) for rows in reader}
 
@@ -118,7 +125,7 @@ def main():
         batch = text_file[0:8]
         #if batch != 'Batch047':
          #   continue
-        with open('Pueblo_text/' + text_file, 'r') as file:
+        with open(text_dir + '/' + text_file, 'r') as file:
             text = file.read()
         chunks, adjud = adjudicated(text)
 
@@ -129,19 +136,19 @@ def main():
         else:
             data = extract_normal(chunks, races, names)
         
-        if not os.path.exists('Pueblo_data/' + batch):
-            os.makedirs('Pueblo_data/' + batch)
-        f = open('Pueblo_data/' + batch + '/' + text_file[8:-4] + '_results.csv', 'w')
+        if not os.path.exists(data_dir + '/' + batch):
+            os.makedirs(data_dir + '/' + batch)
+        f = open(data_dir + '/' + batch + '/' + text_file[8:-4] + '_results.csv', 'w')
         for i in data.keys():
             f.write(str(i) + ', ' + str(data[i]) + '\n')
         f.close()
 
-    w = open("pueblo_races.csv", "w")
+    w = open(races_csv, 'w')
     for key, val in races.items():
         w.write(str(key) + ', ' + str(val) + '\n')
     w.close()
 
-    w = open("pueblo_names.csv", "w")
+    w = open(names_csv, 'w')
     for key, val in names.items():
         w.write(str(key) + ', ' + str(val) + '\n')
     w.close()

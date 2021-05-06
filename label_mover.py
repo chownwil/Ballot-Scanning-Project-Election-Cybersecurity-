@@ -16,8 +16,38 @@ def get_new_path(file_path):
     return root + project + batch + labels
 
 def main():
-    new_path = get_new_path(sys.argv[1])
-    shutil.copy(sys.argv[1], new_path)
+    #new_path = get_new_path(sys.argv[1])
+    #shutil.copy(sys.argv[1], new_path)
 
+    dirs = os.listdir('bubbles_2/00101')
+    for dir in dirs:
+        if os.path.exists('bubbles_2/00101/' + dir + '/labels.csv'):
+            print("Found labels for batch ", dir)
+            new_path = get_new_path('bubbles_2/00101/' + dir)
+            if os.path.exists(new_path):
+                print('Labels already copied')
+            else:
+                shutil.copy('bubbles_2/00101/' + dir + '/labels.csv', new_path)
+
+    dirs = os.listdir('bubbles/00101')
+    for dir in dirs:
+        if os.path.exists('bubbles/00101/' + dir + '/labels.csv'):
+            print("Found labels for batch ", dir)
+            new_path = get_new_path('bubbles_2/00101/' + dir)
+            if os.path.exists(new_path):
+                print('Labels already copied')
+            else:
+                shutil.copy('bubbles/00101/' + dir + '/labels.csv', new_path)
+
+    dirs = os.listdir('bubbles_2/00201')
+    for dir in dirs:
+        if os.path.exists('bubbles_2/00201/' + dir + '/labels.csv'):
+            print('found ICC 201 labels')
+            print("Found labels for batch ", dir)
+            new_path = get_new_path('bubbles_2/00201/' + dir)
+            if os.path.exists(new_path):
+                print('Labels already copied')
+            else:
+                shutil.copy('bubbles_2/00201/' + dir + '/labels.csv', new_path)
 if __name__ == '__main__':
     main()

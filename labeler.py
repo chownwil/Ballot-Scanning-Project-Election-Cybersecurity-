@@ -7,6 +7,7 @@ import numpy as np
 import easygui
 import time
 import shutil
+from tqdm import tqdm
 
 mark_dictionary = {'0': 'no mark',
                    '1': 'properly bubbled',
@@ -54,10 +55,12 @@ def directoryIterator(directory):
     numrows = labelsdf.count()['path']
     history = []
     row = 0
+    pbar = tqdm(total = numrows)
     while row < numrows:
+        pbar.update(1)
         if labelsdf['result'].at[row] == -1:
             filePath = directory +'/' + labelsdf['path'].at[row]
-            data = easygui.enterbox(msg=prompt, default=1, image=filePath)
+            data = easygui.enterbox(msg=prompt + '\n' + pbar.__str__(), default=1, image=filePath)
             if data in mark_dictionary:
                 if data == 'qw/os':
                     return
@@ -88,6 +91,7 @@ def directoryIterator(directory):
                     row += 1
         else:
             row += 1
+    pbar.close()
     if easygui.ynbox(msg='Save?'):
         labelsdf.to_csv(directory + '/labels.csv', index=False)
         shutil.copy(directory + '/labels.csv', get_label_folder_path(directory))

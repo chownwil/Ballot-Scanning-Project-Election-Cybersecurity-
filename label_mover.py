@@ -3,6 +3,7 @@
 import os
 import shutil
 import sys
+import pandas as pd
 
 def get_new_path(file_path):
     root = 'Pueblo_labels/'
@@ -15,6 +16,30 @@ def get_new_path(file_path):
     labels = '/labels.csv'
     return root + project + batch + labels
 
+def combine_all_labels():
+    combined_df = pd.read_csv('labels_00001.csv')
+    dirs = os.listdir('Pueblo_labels/')
+    for dir in dirs:
+        batch_dirs = os.listdir('Pueblo_labels/' + dir)
+        for b_dir in batch_dirs:
+            file = 'Pueblo_labels/' + dir + '/' + b_dir + '/labels.csv'
+            if file != 'Pueblo_labels/ICC 101/00001/labels.csv':
+                temp_df = pd.read_csv(file)
+                combined_df = pd.concat([combined_df, temp_df])
+    combined_df.to_csv( "labels_all.csv", index=False)
+    """
+    for dir in dirs:
+        batch_dirs = os.listdir('Pueblo_labels/' + dir)
+        for b_dir in batch_dirs:
+            file = 'Pueblo_labels/' + dir + '/' + b_dir + '/labels.csv'
+            print(file)
+            f = open(file)
+            for line in f:
+                fout.write(line)
+            f.close()
+    fout.close()
+    """
+    
 def main():
     #new_path = get_new_path(sys.argv[1])
     #shutil.copy(sys.argv[1], new_path)
@@ -49,5 +74,8 @@ def main():
                 print('Labels already copied')
             else:
                 shutil.copy('bubbles_2/00201/' + dir + '/labels.csv', new_path)
+    
+    combine_all_labels()
+
 if __name__ == '__main__':
     main()

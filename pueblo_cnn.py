@@ -1,23 +1,26 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import csv
-import sys
-import cv2
 import os
 from PIL import Image
 
+#Change/remove this block if running this script locally
+os.environ['KERAS_BACKEND'] = 'plaidml.keras.backend'
+os.environ['RUNFILES_DIR'] = '/Users/williamchown/opt/anaconda3/share/plaidml'
+# plaidml might exist in different location. Look for '/usr/local/share/plaidml' and replace in above path
+os.environ['PLAIDML_NATIVE_PATH'] = '/Users/williamchown/opt/anaconda3/lib/libplaidml.dylib'
+# libplaidml.dylib might exist in different location. Look for '/usr/local/lib/libplaidml.dylib' and replace in above path
+
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix, plot_confusion_matrix
+from sklearn.metrics import confusion_matrix
 
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Conv2D, MaxPool2D, Flatten
+from keras.layers import Dense, Conv2D, MaxPool2D, Flatten
 from keras.utils import np_utils
 from keras.callbacks import Callback,ModelCheckpoint
 from keras.wrappers.scikit_learn import KerasClassifier
 import keras.backend as K
-from data_class import DataGenerator
+
 
 #an alternative metric to accuracy
 def get_f1(y_true, y_pred): #taken from old keras source code
@@ -86,7 +89,7 @@ def train_model(model, X_train, Y_train, X_test, Y_test, y_test, batch_size, epo
     return count, accuracy
 
 def main():
-    print("Starting model...")
+    print('Starting model...')
     metric = 'accuracy'
     batch_size = 32
     epochs = 10
@@ -105,7 +108,6 @@ def main():
         X_data.append(img)
     X_data = np.array([np.reshape(x, (50,50,1)) for x in X_data])
 
-    print(X_data.shape)
     X_train, X_test, y_train, y_test = train_test_split(X_data, Y_data, test_size=0.15)
     
     # building the input vector from the 28x28 pixels
@@ -120,22 +122,19 @@ def main():
     #0, (1,6), (2,3), 4, ignore 5
     n_classes = 4
     
-    print("Shape before one-hot encoding: ", y_train.shape)
     Y_train = np_utils.to_categorical(y_train, n_classes)
     Y_test = np_utils.to_categorical(y_test, n_classes)
-    print("Shape after one-hot encoding: ", Y_train.shape)
 
     model = get_model(metric, n_classes)
     kick_count, accuracy = train_model(model, X_train, Y_train, X_test, Y_test, y_test, batch_size, epochs, confidence)
     print('Kick Count: ', kick_count, 'out of ', len(y_test))
     print('Accuracy: ', accuracy)
 	
-    model.save('cnn_model_pueblo')
-
+    prev_models = os.listdir('Trained_Pueblo_Models')
+    model.save('Trained_Pueblo_Models/cnn_model_pueblo_' + str(len(prev_models)))
 
     #pred_probs = model.predict(X_data)
     #pred_labels = pred_probs.argmax(axis=-1)
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
